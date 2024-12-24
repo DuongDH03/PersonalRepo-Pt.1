@@ -1,0 +1,3 @@
+BLU008,Blum8,Barbara,879 Oak,Gary,IN,46100,555-4321
+BLU006,Blum6,Katie,342 Pine,Hammond,IN,46200,555-9242
+BLU007,Blum7,Jessica,229 State,Whiting,IN,46300,555-0921

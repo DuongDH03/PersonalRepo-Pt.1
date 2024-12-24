@@ -1,0 +1,20 @@
+Layout ở Main Page:
+
+					Recommendation (For you)
+					
+					Latest release
+
+					Special offer
+					
+					Trending (Top Seller)
+
+					Categories (Action, RPG, Horror,...)
+
+					Top free
+					
+					Top paid
+
+
+				
+					
+

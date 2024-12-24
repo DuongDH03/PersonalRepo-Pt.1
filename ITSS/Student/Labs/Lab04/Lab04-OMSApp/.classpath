@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib-jersey-client/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/aopalliance-repackaged-2.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/hk2-api-2.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/hk2-locator-2.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/hk2-utils-2.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jackson-annotations-2.10.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jackson-core-2.10.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jackson-databind-2.10.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jackson-module-jaxb-annotations-2.10.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.activation-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.activation-api-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.annotation-api-1.3.5.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.inject-2.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.ws.rs-api-2.1.6.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jakarta.xml.bind-api-2.3.2.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/javassist-3.25.0-GA.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jaxb-api-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jaxb-core-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jaxb-impl-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jersey-client-2.31.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jersey-common-2.31.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jersey-entity-filtering-2.31.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jersey-hk2-2.31.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/jersey-media-json-jackson-2.31.jar"/>
+	<classpathentry kind="lib" path="lib-jersey-client/osgi-resource-locator-1.0.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,5 @@
+\c tinyedu
+
+\d school2."class"
+
+SELECT * FROM school2."student";

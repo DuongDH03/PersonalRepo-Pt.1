@@ -1,0 +1,74 @@
+[
+	{
+		"type": "book",
+		"id": "book1",
+		"title": "Java Programming",
+		"category": "Information Technolgy",
+		"cost": "250000",
+		"barcode": "book1",
+		"description": "Java Programming",
+		"quantity": 100,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"publisher": "Springer",
+		"publicationDate": "15/07/2020",
+		"authors": [
+			"Joe Wigglesworth",
+			"Paula Lumby"
+		],
+		"numberOfPages": 20,
+		"language": "English"
+	},
+	{
+		"type": "book",
+		"id": "book2",
+		"title": "C# Programming",
+		"category": "Information Technolgy",
+		"cost": "350000",
+		"barcode": "book3",
+		"description": "C# Programming",
+		"quantity": 120,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"publisher": "Springer",
+		"publicationDate": "15/07/2020",
+		"authors": [
+			"Peter",
+			"John"
+		],
+		"numberOfPages": 20,
+		"language": "English"
+	},
+	{
+		"type": "book",
+		"id": "book3",
+		"title": "Python Programming",
+		"category": "Information Technolgy",
+		"cost": "150000",
+		"barcode": "book3",
+		"description": "Python Programming",
+		"quantity": 130,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"publisher": "Springer",
+		"publicationDate": "15/07/2020",
+		"authors": [
+			"Peter",
+			"John"
+		],
+		"numberOfPages": 20,
+		"language": "English"
+	}
+]

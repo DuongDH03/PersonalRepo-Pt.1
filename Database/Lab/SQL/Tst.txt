@@ -1,0 +1,132 @@
+-- psql -d dellstore -U postgres -f [path/]dellstore2-normal-1.0.sql
+
+--1
+SELECT prod_id, title FROM products WHERE category = ‘Documentary’;
+
+--2
+SELECT * FROM products WHERE LOWER(title) LIKE ‘%apollo%’ AND price < 10;
+
+--3
+SELECT categoryname FROM categories WHERE category NOT IN (SELECT DISTINCT category FROM products JOIN orderlines ON products.prod_id = orderlines.prod_id);
+
+--4
+SELECT DISTINCT country FROM customers JOIN orders ON customers.customerid = orders.customerid ORDER BY country;
+
+--5
+SELECT COUNT(*) FROM customers WHERE country = ‘Germany’;
+
+--6
+SELECT COUNT(DISTINCT customerid) FROM orders;
+
+--7
+SELECT country, COUNT(DISTINCT customerid), COUNT(*) FROM customers JOIN 
+orders ON customers.customerid = orders.customerid GROUP BY country;
+
+--8
+SELECT customerid, firstname, lastname FROM customers WHERE customerid IN (SELECT customerid FROM orders JOIN orderlines ON orders.orderid = orderlines.orderid JOIN products ON orderlines.prod_id = products.prod_id WHERE LOWER(title) = ‘airport robbers’ OR LOWER(title) = ‘agent order’ GROUP BY customerid HAVING COUNT(DISTINCT title) = 2);
+
+
+--C2
+SELECT customerid, firstname, lastname 
+FROM customers
+WHERE customerid IN (
+    SELECT customerid 
+    FROM orders 
+    JOIN orderlines ON orders.orderid = orderlines.orderid 
+    JOIN products ON orderlines.prod_id = products.prod_id 
+    WHERE LOWER(title) = 'airport robbers'
+    
+    INTERSECT
+    
+    SELECT customerid 
+    FROM orders 
+    JOIN orderlines ON orders.orderid = orderlines.orderid 
+    JOIN products ON orderlines.prod_id = products.prod_id 
+    WHERE LOWER(title) = 'agent order'
+);
+
+--C3
+WITH customer_orders AS (
+    SELECT customerid, title 
+    FROM orders 
+    JOIN orderlines ON orders.orderid = orderlines.orderid 
+    JOIN products ON orderlines.prod_id = products.prod_id 
+    WHERE LOWER(title) IN ('airport robbers', 'agent order')
+)
+SELECT customerid, firstname, lastname 
+FROM customers
+WHERE customerid IN (
+    SELECT customerid 
+    FROM customer_orders 
+    GROUP BY customerid 
+    HAVING COUNT(DISTINCT title) = 2
+);
+
+
+--9
+SELECT orderlineid, orderlines.prod_id, title, quantity, price, quantity*price AS amount FROM orderlines JOIN products ON orderlines.prod_id = products.prod_id WHERE orderid = 942;
+
+--10
+SELECT MAX(totalamount), MIN(totalamount), AVG(totalamount) FROM orders;
+
+--11
+SELECT gender, categoryname, COUNT(*) 
+FROM customers 
+JOIN orders ON customers.customerid = orders.customerid 
+JOIN orderlines ON orders.orderid = orderlines.orderid 
+JOIN products ON orderlines.prod_id = products.prod_id 
+JOIN categories ON products.category = categories.category
+GROUP BY gender, categoryname 
+ORDER BY COUNT(*) DESC;
+
+
+--12
+SELECT DISTINCT prod_id, title FROM products JOIN orderlines ON products.prod_id = orderlines.prod_id WHERE DATE(orderdate) = CURRENT_DATE;
+
+--C2
+SELECT DISTINCT customers.customerid, firstname, lastname 
+FROM customers 
+JOIN orders ON customers.customerid = orders.customerid 
+GROUP BY customers.customerid, firstname, lastname
+HAVING SUM(totalamount) > 2000;
+
+
+--13
+SELECT title, quan_in_stock FROM products JOIN inventory ON products.prod_id = inventory.prod_id LEFT JOIN (SELECT prod_id FROM orderlines JOIN orders ON orderlines.orderid = orders.orderid WHERE MONTH(orderdate) = 12 AND YEAR(orderdate) = 2004) AS temp ON products.prod_id = temp.prod_id WHERE temp.prod_id IS NULL;
+
+--14
+SELECT customers.customerid, firstname, lastname, COUNT(*) AS num_orders
+FROM customers
+JOIN orders ON customers.customerid = orders.customerid
+WHERE EXTRACT(MONTH FROM orderdate) = 1
+GROUP BY customers.customerid, firstname, lastname;
+
+
+--đưa ra danh sách thông tin sản phẩm gồm title, actor, price và tổng số lượng 
+-- bán được trong 3 tháng cuối năm 2014
+
+SELECT title, actor, price, SUM(quantity) AS total_sold
+FROM products
+JOIN orderlines ON products.prod_id = orderlines.prod_id
+JOIN orders ON orderlines.orderid = orders.orderid
+WHERE orders.orderdate >= '2014-10-01' AND orders.orderdate <= '2014-12-31'
+GROUP BY title, actor, price;
+
+
+--15
+SELECT firstname || ' ' || lastname AS name, phone, creditcardexpiration
+FROM customers
+WHERE EXTRACT(YEAR FROM to_date(creditcardexpiration, 'YYYY/MM')) = EXTRACT(YEAR FROM CURRENT_DATE);
+
+--16: Top sales
+WITH top_selling_products AS (
+    SELECT prod_id, SUM(quantity) AS total_sold
+    FROM orderlines
+    GROUP BY prod_id
+    ORDER BY total_sold DESC
+    LIMIT 10
+)
+SELECT MAX(price) AS max_price, MIN(price) AS min_price, AVG(price) AS avg_price
+FROM products
+WHERE prod_id IN (SELECT prod_id FROM top_selling_products);
+

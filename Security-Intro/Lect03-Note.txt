@@ -1,0 +1,39 @@
+=============== XÁC THỰC THÔNG ĐIỆP ============
+1, Đặt vấn đề
+-Bản tin xác minh được tính toàn vẹn (Unedited) (Tính cả người nhận tự tạo và đổ lỗi cho người còn lại)
+-Nguồn gốc tin cậy (Bao gồm người gửi phủ nhận bản tin )
+-Đúng thời điểm
+
+2, Mã xác thực thông điệp
+-Message Authentication Code 
+	+Length(t)<<Length(m) (t là sinh mã, m là bản tin)
+	+Sinh mã:(128 bit): Kích thước cố định, kp thuộc m
+	+Xác minh:V(k,m,t)
+
+	+Tấn công: Không để lộ khóa k, xác suất tấn công 2^-n
+	+Xác thực bản tin phía gửi, xác thực tính toàn vẹn bên nhận, nhưng không ngăn cản gian lận phía gửi
+
+
+-An toàn của MAC
++Ví dụ: Giả sử MAC(S,V)	là an toàn
+	Tạo ra newMAC = (new-S,new-V)	
+	t = new-S(k,m1||m2) = S(k,m1)|| S(k,m2)
+	new-V(k,m1||m2,t)
+		So sánh t = new-S(k,m1||m2)?
+	t1||t2 = S(k,m1) || S(k,m2)
+		=> t2||t1 = S(k,m2) || S(k,m1) ->Cặp MAC này hợp lệ
+============> Không an toàn hơn dù trên lý thuyết xác suất = 2^-n
+
+============> Tính mã MAC trên toàn bộ bản tin
+		  Không tạo MAC mới mà ko kiểm tra tính an toàn của nó <========================
+	
+
+
++++++++++++++++++++++++++++++++++++++++++++++	
+		HASH FUNCTION
+Tấn công tính đụng độ mạnh +yếu : tấn công tuần tự mất thời gian trung bình: 2^n/2 | (2^n+1)/2
+Không gian bản tin gốc tăng như nào thì tập giá trị băm vẫn ở 2^n (Nhìn đồ thị )
+		====> Nếu hàm băm thiết lập cho tấn công vét cạn là tấn công hiệu quả nhất:
+				Tăng n đủ lớn thì Hash an toàn
+
+	

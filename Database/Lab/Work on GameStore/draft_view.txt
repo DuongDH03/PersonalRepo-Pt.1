@@ -1,0 +1,67 @@
+users(user_id, username, password_hash, email, phone_number, balance, status, create_date)
+games(game_id, name, release_date, status, revenue, developer_id, price, ver)
+administrators(admin_id, admin_name)
+monitor(admin_id, user_id, action, m_time)
+control(admin_id, game_id, action, c_time)
+genres(genre_id, genre_name)
+game_dev(developer_id, name, email, address, website, starting_date)
+purchase(user_id, game_id, time)
+wishlist(user_id, game_id)
+review(user_id, game_id, scoring)
+belongto(game_id, genre_id)
+
+-- Create VIEW on Game's Rating 
+CREATE VIEW game_rate AS
+SELECT game_id, AVG(scoring) AS rating
+FROM review
+GROUP BY game_id;
+
+CREATE VIEW game_revenue AS
+SELECT p.game_id, SUM(g.price) AS revenue
+FROM purchase p
+JOIN games g ON p.game_id = g.game_id
+GROUP BY p.game_id;
+
+-- View Top Free Games
+-- Ranked by Rating
+CREATE VIEW top_free_games AS
+    SELECT name, rating
+    FROM games JOIN game_rate USING (game_id)
+    WHERE price = 0
+    ORDER BY rating DESC;
+
+-- VIEW Top Paid game
+-- Ranked by the Revenue
+CREATE VIEW top_paid_games AS
+    SELECT name, revenue
+    FROM game_revenue JOIN games USING (game_id)
+    WHERE price > 0
+    ORDER BY revenue DESC;
+
+-- Update the Balance of User
+CREATE OR REPLACE FUNCTION update_user_balance() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE users 
+    SET balance = balance - NEW.cost 
+    WHERE user_id = NEW.user_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_balance
+AFTER INSERT ON purchase
+FOR EACH ROW
+EXECUTE PROCEDURE update_user_balance();
+
+
+-- VIEW Popular Genres
+CREATE VIEW popular_genres AS
+    SELECT g.genre_name, AVG(ga.rating) AS avg_rating
+    FROM genres g
+    JOIN games ga USING (game_id) 
+    JOIN game_rate USING (game_id)
+    GROUP BY g.genre_name
+    ORDER BY avg_rating DESC;
+
+
+

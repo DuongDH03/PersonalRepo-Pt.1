@@ -1,0 +1,5 @@
+\l
+
+\d public."customer"
+
+SELECT * FROM public."customer";

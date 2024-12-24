@@ -1,0 +1,73 @@
+1. a. Câu mã hóa RSA với p = 19, q = 97
+   b. Hỏi là 1 xâu 20 kí tự ASCII thì mã hóa thành bao nhiêu khối ? 
+   c. Tại sao thuật toán sinh khóa RSA luôn tồn tại khóa riêng ứng với khóa công khai (với 1 e có 1 d?)
+2. Cho sơ đồ : KsAB là khóa phiên cần trao đổi, KmAB là khóa chính đã có của A và B
+	B1 : A->B: IDa, Na
+	B2 : B->A: KmAB(Na, KsAB)
+	B3 : A->B: KsAB(Na)
+Sơ đồ này có an toàn không? tại sao?
+Hãy đưa ra sơ đồ an toàn hơn?
+
+3. a. Sơ đồ xác thực bằng hàm băm
+   b. Sơ đồ này có rủi ro gì?
+   c. Trình bày bảo mật trong giao thức challenge/response?
+
+
+
+
+1
+a)
+
+n= 19*97 = 1843
+phi(n) = (p-1)(q-1) = 1728 = 2 .3 
+chọn e, 1< e < phi(n) 
+	và UCLN (phi(n), e) =1
+		e = 11 
+chọn d, 1<d<phi(n)
+		exd mod phi(n) =1 
+			----> d = phi(n),k +1 /e 
+				   =(  (157.11 + 1).k +1 )/11
+				   = 157k+ (k+1)/11
+				   => k = 10
+					Nếu k = 21 => d vẫn nguyên, tuy nhiên ko thỏa mãn 1<d<phi(n)
+
+				=> d =  1570 + 1 = 1571
+
+Công khai: (e,n) = (11,1843)
+Cá nhân: (d,n) = (1571,1843)
+
+b) n=1843
+	In practice: Kích thước khối = i, với 2^i <n< 2^(i+1)
+					i<log2(n)<i+1
+					i<10.84<i+1
+				====> i = 10 bit
+
+c) Tại sao RSA lại sinh ra ánh xạ 1:1 với e và d (1 e sinh ra 1 d)?
+		Chứng minh tính toán phức tạp 
+
+
+3,
+a)	Sơ đồ
+A->B: m||H(m), không phụ thuộc vào 1 khóa  
+B->A: Nhận được m và H(m)
+	Lúc đấy sẽ 	H(m) và so sánh với H(m) đã được nhận từ trước 
+
+b) Rõ ràng là mô hình này có rất nhiều lỗ hổng 
+A->B: m||H(m)
+C->B: m'||H(m')
+		B sẽ không thể biết đâu là bản m đúng do hàm H(m) không phụ thuộc vào khóa K, chỉ dùng văn bản
+
+-----------> cần phải Hash với 1 khóa K bí mật giữa A và B để xác thực
+
+A->B: m||H(m,k)
+B: Thực hiện hàm H(m,k) với khóa k chỉ có A,B biết
+	so sánh với bản H(m,k) được nhận để xác thực 
+C Nếu gửi đi 1 bản m' thì ko thể tạo được H(m,k), vì bản của C là H(m',k') (không có khóa k)
+
+c) ....  (Identity Authentication)
+
+	
+		
+
+
+		

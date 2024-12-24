@@ -1,0 +1,50 @@
+--1 
+SELECT * 
+FROM products
+WHERE price >100;
+
+CREATE INDEX indx_price_prod ON products (price);
+
+--2
+ALTER TABLE products
+ADD COLUMN sales INTEGER;
+
+--3
+CREATE OR REPLACE FUNCTION update_sales(prodid INTEGER)
+RETURNS VOID
+AS $$
+BEGIN
+    UPDATE products
+    SET sales = (
+        SELECT SUM(quantity) FROM orderlines
+        WHERE orderlines.prod_id = prodid
+    )
+    WHERE products.prod_id = prodid;
+END;
+$$ LANGUAGE plpgsql;
+
+--4
+
+CREATE OR REPLACE FUNCTION update_product_sales()
+RETURNS TRIGGER
+AS $$
+BEGIN
+    PERFORM update_sales(NEW.prod_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_product_sales
+AFTER INSERT OR UPDATE ON orderlines
+FOR EACH ROW
+EXECUTE FUNCTION update_product_sales();
+
+--5
+SELECT * 
+FROM customers
+WHERE age < 18 OR age > 50;
+
+--6
+Không thể sử dụng Index để tăng hiệu năng trong trường hợp này do việc sử dụng OR sẽ khiến cho  việc kiểm tra nếu điều kiện đầu (age>18) sai sẽ là trường hợp còn lại (age<50), khiến cho phải duyệt qua tất cả các bản ghi mà không lọc được ít đi bất cứ bản nào, khiến cho Index không hiệu quả
+
+

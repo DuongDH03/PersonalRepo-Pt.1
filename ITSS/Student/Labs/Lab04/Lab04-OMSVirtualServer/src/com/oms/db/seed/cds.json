@@ -1,0 +1,98 @@
+[
+	{
+		"type": "cd",
+		"id": "cd1",
+		"title": "Selena Gomez 2020",
+		"category": "Pop",
+		"cost": "250000",
+		"barcode": "cd1",
+		"description": "Many interesting songs",
+		"quantity": 100,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"artist": "Selena Gomez",
+		"dateOfIssue": "15/07/2020",
+		"tracks": [
+			{
+				"title": "Ice Scream",
+				"length": 200
+			},
+			{
+				"title": "We dont talk anymore",
+				"length": 200
+			},
+			{
+				"title": "Hold on",
+				"length": 200
+			}
+		]
+	},
+	{
+		"type": "cd",
+		"id": "cd2",
+		"title": "Miley Cyrus 2020",
+		"category": "R&B",
+		"cost": "550000",
+		"barcode": "cd2",
+		"description": "Many interesting songs",
+		"quantity": 100,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"artist": "Miley Cyrus",
+		"dateOfIssue": "15/07/2020",
+		"tracks": [
+			{
+				"title": "Wrecking Ball",
+				"length": 200
+			},
+			{
+				"title": "Slide Away",
+				"length": 300
+			},
+			{
+				"title": "Midnight Sky",
+				"length": 200
+			}
+		]
+	},
+	{
+		"type": "cd",
+		"id": "cd3",
+		"title": "Modern Talking 2020 collection",
+		"category": "Rock",
+		"cost": "250000",
+		"barcode": "cd3",
+		"description": "Many interesting songs",
+		"quantity": 100,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"artist": "Modern Talking",
+		"dateOfIssue": "15/07/2020",
+		"tracks": [
+			{
+				"title": "No face no name no number",
+				"length": 200
+			},
+			{
+				"title": "Cheri Cheri Lady",
+				"length": 200
+			},
+			{
+				"title": "Youre my heart, youre my soul",
+				"length": 200
+			}
+		]
+	}
+]

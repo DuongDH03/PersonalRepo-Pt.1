@@ -1,0 +1,18 @@
+{
+    "java.dependency.packagePresentation": "flat",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.base.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.controls.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.fxml.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.graphics.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.media.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.swing.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx.web.jar",
+        "c:\\Users\\phuon\\Downloads\\Installer\\javafx-sdk-21.0.1\\lib\\javafx-swt.jar"
+    ],
+    "java.project.sourcePaths": [
+        "test/AimsProject/src",
+        "demo/src/main/java/test"
+    ]
+}

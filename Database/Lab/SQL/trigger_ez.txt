@@ -1,0 +1,289 @@
+-- Example
+
+-- define a trigger function
+CREATE OR REPLACE FUNCTION
+insert_view_student_class_shortinfos() RETURNS
+trigger AS
+$$
+DECLARE 
+		cnt int4 :=0;
+BEGIN
+		insert into student (student_id, last_name, first_name , gender) 
+		values (NEW.student_id,NEW.last_name, NEW.first_name, NEW.gender);
+		RETURN NEW;
+
+		IF new.name is not null then 
+		select into cnt count(*) from clazz where name = new.name;
+		if cnt = 1 then 
+			update student 
+			set clazz_id = (select clazz_id 
+						from clazz 
+						where name = new.name)
+			where student_id = new.student_id;
+			RETURN NEW;
+		else 
+			if cnt>1 THEN 
+				RAISE WARNING 'Bruh you cant do this mate';
+			ELSE 
+				RAISE NOTICE 'Bruh the class didnt even exist';
+			END IF; 
+			NEW.name := NULL;
+			RETURN NULL;	
+		END IF;
+END;
+$$ LANGUAGE plpgsql ;
+
+CREATE OR REPLACE TRIGGER insert_student_view
+INSTEAD OF INSERT ON student_class_shortinfos
+FOR EACH ROW
+EXECUTE PROCEDURE
+insert_view_student_class_shortinfos();
+
+ insert into student_class_shortinfos ( student_id, first_name, last_name, gender )
+values ('20215020', 'Deez', 'NATS', 'M');
+
+-- REMINDER: NULL Attribute contraint
+
+-- Exercise
+
+-- Update 
+
+
+CREATE OR REPLACE FUNCTION fnc_update()
+RETURNS trigger
+AS
+$$ 
+begin
+	IF (OLD.name IS DISTINCT FROM NEW.name 
+		OR OLD.student_id IS DISTINCT FROM NEW.student_id) 
+	THEN 
+		RAISE NOTICE 'Bruh cant update %', TG_RELNAME;
+		RETURN NULL;
+	END IF;
+
+	IF (OLD.first_name IS DISTINCT FROM NEW.first_name
+		OR OLD.last_name IS DISTINCT FROM NEW.last_name)
+	THEN
+	--update student
+	UPDATE STUDENT SET STUDENT_ID =NEW.STUDENT_ID ,
+						FIRST_NAME = NEW.FIRST_NAME,
+						LAST_NAME= NEW.LAST_NAME
+	WHERE STUDENT_ID = OLD.STUDENT_ID;
+	RETURN NEW;
+	END IF;	
+end;
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER UPDATE_STUDENT_VIEW INSTEAD OF
+UPDATE ON STUDENT_CLASS_SHORTINFOS
+FOR EACH ROW EXECUTE PROCEDURE FNC_UPDATE();
+
+-- Delete
+CREATE OR REPLACE FUNCTION fnc_del() RETURNS TRIGGER
+AS
+$$
+BEGIN
+	DELETE FROM student where student_id = OLD.student_id;
+	RETURN old;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER del_stud_view INSTEAD OF 
+DELETE ON student_class_shortinfos
+FOR EACH ROW EXECUTE PROCEDURE fnc_del();
+	
+-- REMINDER: CONTRAINT from another TABLE
+
+
+-- Trigger after Insert a new Student
+
+CREATE OR REPLACE FUNCTION f_ins_af() RETURNS TRIGGER
+AS
+$$
+BEGIN
+	UPDATE clazz 
+	SET number_students = number_students + 1
+	WHERE clazz_id = NEW.clazz_id;
+	RAISE NOTICE 'Bitch ass Trigger % is Running like a Horse', TG_NAME;
+
+	
+	RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER ins_af
+AFTER INSERT ON student
+FOR EACH ROW 
+WHEN (NEW.clazz_id is NOT NULL) 
+EXECUTE PROCEDURE f_ins_af();
+
+insert into student ( student_id, first_name, last_name, gender, clazz_id )
+values ('20215021', 'Viva', 'Lavida', 'M', '20162101');
+
+insert into student ( student_id, first_name, last_name, gender)
+values ('20215022', 'Bottom', 'Fathom', 'M');
+
+insert into student ( student_id, first_name, last_name, gender)
+values ('20215060', 'Upper', 'NUn', 'M');
+
+insert into student ( student_id, first_name, last_name, gender, clazz_id )
+values ('20215027', 'Tyyu', 'Supper', 'M', '20162101');
+
+insert into student ( student_id, first_name, last_name, gender, clazz_id )
+values ('20212099', 'master', 'c00m', 'M', '');
+
+
+-- Trigger after Delete a Student
+
+CREATE OR REPLACE FUNCTION f_del_af() RETURNS TRIGGER
+AS
+$$
+BEGIN
+	UPDATE clazz 
+	SET number_students = number_students - 1
+	WHERE clazz_id = OLD.clazz_id;
+	
+	RETURN OLD;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER del_af
+AFTER DELETE ON student
+FOR EACH ROW 
+WHEN (OLD.clazz_id is NOT NULL) 
+EXECUTE PROCEDURE f_del_af();
+
+delete from student 
+where student_id = '20215021';
+
+-- Trigger after UPDATE a student
+
+CREATE OR REPLACE FUNCTION f_upd_af() RETURNS TRIGGER
+AS
+$$
+BEGIN
+	UPDATE clazz 
+	SET number_students = number_students + 1
+	WHERE clazz_id = NEW.clazz_id;      	
+	
+	UPDATE clazz 
+	SET number_students = number_students - 1
+	WHERE clazz_id = OLD.clazz_id;
+
+	RAISE NOTICE 'Bitch ass Trigger % is Running like a Horse', TG_NAME;
+		
+	RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER upd_af
+AFTER UPDATE ON student
+FOR EACH ROW 
+WHEN (NEW.clazz_id IS DISTINCT FROM OLD.clazz_id) 
+EXECUTE PROCEDURE f_upd_af();
+
+update student
+set clazz_id = '20162101'
+where student_id = '20215020';
+
+update student
+set clazz_id = '20162102'
+where student_id = '20215020';
+
+-- Merge
+
+DROP TRIGGER upd_df ON student;
+DROP TRIGGER del_df ON student;
+DROP TRIGGER ins_df ON student;
+
+
+CREATE OR REPLACE FUNCTION f_alter_af() RETURNS TRIGGER
+AS
+$$
+BEGIN
+	IF (TG_OP = 'INSERT' AND NEW.clazz_id IS NOT NULL) THEN
+		UPDATE clazz 
+		SET number_students = number_students + 1
+		WHERE clazz_id = NEW.clazz_id;
+	ELSE 
+		IF (TG_OP = 'DELETE' AND OLD.clazz_id IS NOT NULL) THEN
+			UPDATE clazz 
+			SET number_students = number_students - 1
+			WHERE clazz_id = OLD.clazz_id;
+		ELSE 
+			IF (TG_OP = 'UPDATE' AND OLD.clazz_id IS DISTINCT FROM NEW.clazz_id) THEN 
+				UPDATE clazz 
+				SET number_students = number_students + 1
+				WHERE clazz_id = NEW.clazz_id;      	
+	    
+				UPDATE clazz 
+				SET number_students = number_students - 1
+				WHERE clazz_id = OLD.clazz_id;
+			END IF;
+		END IF;
+	END IF;
+	RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER alter_af
+AFTER UPDATE OR DELETE OR INSERT ON student
+FOR EACH ROW 
+EXECUTE PROCEDURE f_alter_af();
+
+
+--ALTERNATIVE solution: Create a Merged function like f_alter_af (without the NEW/OLD 
+-- condition), create 3 trigger upd_af, del_af, ins_af but ALL TRIGGER f_alter_af
+
+-- Enrollment trigger: Maximum 200 students at 1 subject in a semester
+CREATE OR REPLACE FUNCTION f_enroll_lim() RETURNS TRIGGER
+AS 
+$$
+DECLARE C int4 := 0;
+BEGIN
+	SELECT COUNT(*) INTO C
+	FROM enrollment 
+	WHERE (subject_id = NEW.subject_id AND semester = NEW.semester);
+
+	IF (C >= 6) THEN     		-- intentionally left it at 2 so it can be ez to check
+		RAISE NOTICE 'Bruh maxed out lmao';
+		RETURN NULL;
+	ELSE
+		RETURN NEW;
+	END IF;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER enroll_lim
+BEFORE INSERT OR UPDATE ON enrollment
+FOR EACH ROW
+EXECUTE PROCEDURE f_enroll_lim(); 
+
+insert into enrollment ( student_id, subject_id, semester )
+values ('20215020', 'IT3090', '20181' );
+
+insert into enrollment ( student_id, subject_id, semester )
+values ('20215021', 'IT3090', '20181' );
+
+insert into enrollment ( student_id, subject_id, semester )
+values ('20215027', 'IT3090', '20181' );
+
+update enrollment 
+set semester = '20172', subject_id = 'IT3080'
+where student_id = '20215020';
+
+
+
+
+
+
+

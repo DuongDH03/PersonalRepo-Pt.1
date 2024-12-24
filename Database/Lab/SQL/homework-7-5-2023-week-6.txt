@@ -1,0 +1,114 @@
+--11. 
+select * from student where EXTRACT (YEAR from AGE(now(), dob)) >= 25;
+
+--12. 
+select * from student where  EXTRACT (YEAR from student.dob) = 1999 ;
+
+--13.
+select clazz.name, count(student_id) from clazz join student using (clazz_id) group by clazz.name;
+
+--14. 
+select s.subject_id, max(e.midterm_score), avg(e.midterm_score), min(e.midterm_score) 
+    from subject s join enrollment e using (subject_id)
+    where s.name = ' Mß║íng m├íy t├¡nh' and e.semester = '20172'
+    group by s.subject_id;
+
+--15. 
+select lecturer.lecturer_id, count(teaching.subject_id) 
+    from lecturer join teaching on (lecturer.lecturer_id =teaching.lecturer_id)
+    group by lecturer.lecturer_id;
+
+--16.
+ select subject.subject_id, name
+    from subject join teaching on (subject.subject_id = teaching.subject_id)
+    group by subject.subject_id, name
+    having count (teaching.lecturer_id) >= 2;
+
+--17. 
+select subject.subject_id, name
+    from subject left join teaching on (subject.subject_id = teaching.subject_id)
+    group by subject.subject_id, name
+    having count (teaching.lecturer_id) < 2;
+
+
+--18. 
+select student.student_id, enrollment.final_score
+    from student join enrollment on (student.student_id = enrollment.student_id)
+    where final_score
+           = ( select max(final_score)  
+                from enrollment
+                 where semester = '20172' and subject_id = 'IT3080'
+                   group by subject_id
+               ) 
+               and enrollment.semester = '20172' 
+               and enrollment.subject_id = 'IT3080';
+
+
+    select student.student_id, enrollment.final_score
+    from student join enrollment on (student.student_id = enrollment.student_id)
+    where final_score
+           = ( select max(final_score)  
+                from enrollment
+                   group by subject_id, semester
+                   having semester = '20172' and subject_id = 'IT3080'
+               );
+
+--18
+SELECT student.first_name, student.last_name
+FROM student
+JOIN enrollment ON student.student_id = enrollment.student_id
+WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+AND enrollment.midterm_score = (
+    SELECT MAX(midterm_score)
+    FROM enrollment
+    WHERE subject_id = 'IT3080' AND semester = '20172'
+);
+
+--C2
+SELECT student.first_name, student.last_name
+FROM student
+JOIN enrollment ON student.student_id = enrollment.student_id
+JOIN subject ON enrollment.subject_id = subject.subject_id
+WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+AND (enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100) = (
+    SELECT MAX(enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100)
+    FROM enrollment
+    JOIN subject ON enrollment.subject_id = subject.subject_id
+    WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+);
+
+	
+	
+
+-- in WHERE, we can write a sub query for remind the data return;
+-- use USING instead of ON if we JOIN table having same column name;
+
+
+-- select max(enrollment.midterm_score * (1-subject.percentage_final_exam/100.0)  
+--enrollment.final_score*(subject.percentage_final_exam)/100.0)  as max_point
+-- from enrollment join subject using (subject_id)
+-- group by enrollment.subject_id, enrollment.semester
+-- having enrollment.semester = '20172' and enrollment.subject_id = 'IT3080'
+
+
+
+--18+.
+
+select s.student_id, (e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0) as point 
+from student s join enrollment e using (student_id) join subject sj using (subject_id)
+where e.semester = '20172' and  e.subject_id = 'IT3080'
+      and e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0
+           = (select max(e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0)
+               from enrollment e join subject sj using (subject_id)
+                group by e.semester, e.subject_id
+                  having e.semester = '20172' and e.subject_id = 'IT3080');
+       
+
+
+
+
+
+
+
+
+

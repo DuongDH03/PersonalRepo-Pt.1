@@ -1,0 +1,3 @@
+- Thêm id cho Monitor, Review, Purchase, Control
+- Sửa trong bảng quan hệ 
+- Tạo 1 database mới trong PG Admin và sử dụng ERD Tool (trong Tool) ở Public

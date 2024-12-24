@@ -1,0 +1,15 @@
+\c tinyedu
+
+INSERT INTO school2."student"
+VALUES ('2021001', 'Deezer', 'Nat');
+
+INSERT INTO school2."student"
+VALUES ('2021002', 'Maximus', 'bolz','21/12/2022','Male');
+
+INSERT INTO school2."student"
+VALUES ('2021003', 'Coomer', 'Wright');
+
+INSERT INTO school2."student"
+VALUES ('202100', 'Coomer', 'Wright');
+
+--\i 'D:/dir/file'

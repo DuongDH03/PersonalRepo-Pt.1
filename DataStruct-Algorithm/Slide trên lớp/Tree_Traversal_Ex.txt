@@ -1,0 +1,3 @@
+Viết CT xây dựng 1 cây biểu thức từ 1 biểu thức cho trước (Dạng trung tố)
+---> Duyệt để tìm ra dạng hậu tố của biểu thức
+  ---> Sử dụng dạng hậu tố để tính toán biểu thức = Stack

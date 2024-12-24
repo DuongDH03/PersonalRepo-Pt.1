@@ -1,0 +1,118 @@
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | customer | table | postgres
+(1 row)
+
+                                                                List of databases
+   Name    |  Owner   | Encoding |          Collate           |           Ctype            | ICU Locale | Locale Provider |   Access privileges   
+-----------+----------+----------+----------------------------+----------------------------+------------+-----------------+-----------------------
+ Test      | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ postgres  | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ template0 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ test2     | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+(5 rows)
+
+                                                                List of databases
+   Name    |  Owner   | Encoding |          Collate           |           Ctype            | ICU Locale | Locale Provider |   Access privileges   
+-----------+----------+----------+----------------------------+----------------------------+------------+-----------------+-----------------------
+ Test      | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ postgres  | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ template0 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ test2     | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+(5 rows)
+
+                                                                List of databases
+   Name    |  Owner   | Encoding |          Collate           |           Ctype            | ICU Locale | Locale Provider |   Access privileges   
+-----------+----------+----------+----------------------------+----------------------------+------------+-----------------+-----------------------
+ Test      | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ postgres  | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ template0 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ test2     | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+(5 rows)
+
+                     Table "public.customer"
+   Column   |       Type        | Collation | Nullable | Default 
+------------+-------------------+-----------+----------+---------
+ CustomerID | character(6)      |           | not null | 
+ LastName   | character varying |           | not null | 
+ FirstName  | character varying |           | not null | 
+ Address    | character varying |           |          | 
+ City       | character varying |           |          | 
+ State      | character(2)      |           |          | 
+ Zip        | character(5)      |           |          | 
+ Phone      | character varying |           |          | 
+ ProductID  | character(10)     |           | not null | 
+Indexes:
+    "pk_customer" PRIMARY KEY, btree ("CustomerID")
+Foreign-key constraints:
+    "product_fkey" FOREIGN KEY ("ProductID") REFERENCES product("ProductID") NOT VALID
+
+ CustomerID | LastName | FirstName | Address | City | State  | Zip | Phone | ProductID  
+------------+----------+-----------+---------+------+--------+-----+-------+------------
+ 0001       | Neutron  | Jimmy     |         |      |        |     |       | apple     
+ 0002       | Deezer   | Natts     |         |      |        |     |       | banana    
+(2 rows)
+
+                                                                List of databases
+   Name    |  Owner   | Encoding |          Collate           |           Ctype            | ICU Locale | Locale Provider |   Access privileges   
+-----------+----------+----------+----------------------------+----------------------------+------------+-----------------+-----------------------
+ Test      | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ postgres  | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ template0 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ test2     | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+(5 rows)
+
+                     Table "public.customer"
+   Column   |       Type        | Collation | Nullable | Default 
+------------+-------------------+-----------+----------+---------
+ CustomerID | character(6)      |           | not null | 
+ LastName   | character varying |           | not null | 
+ FirstName  | character varying |           | not null | 
+ Address    | character varying |           |          | 
+ City       | character varying |           |          | 
+ State      | character(2)      |           |          | 
+ Zip        | character(5)      |           |          | 
+ Phone      | character varying |           |          | 
+ ProductID  | character(10)     |           | not null | 
+Indexes:
+    "pk_customer" PRIMARY KEY, btree ("CustomerID")
+Foreign-key constraints:
+    "product_fkey" FOREIGN KEY ("ProductID") REFERENCES product("ProductID") NOT VALID
+
+ CustomerID | LastName | FirstName | Address | City | State  | Zip | Phone | ProductID  
+------------+----------+-----------+---------+------+--------+-----+-------+------------
+ 0001       | Neutron  | Jimmy     |         |      |        |     |       | apple     
+ 0002       | Deezer   | Natts     |         |      |        |     |       | banana    
+(2 rows)
+
+                                                                List of databases
+   Name    |  Owner   | Encoding |          Collate           |           Ctype            | ICU Locale | Locale Provider |   Access privileges   
+-----------+----------+----------+----------------------------+----------------------------+------------+-----------------+-----------------------
+ Test      | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ postgres  | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+ template0 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | =c/postgres          +
+           |          |          |                            |                            |            |                 | postgres=CTc/postgres
+ test2     | postgres | UTF8     | English_United States.1252 | English_United States.1252 |            | libc            | 
+(5 rows)
+
+ CustomerID | LastName | FirstName | Address | City | State  | Zip | Phone | ProductID  
+------------+----------+-----------+---------+------+--------+-----+-------+------------
+ 0001       | Neutron  | Jimmy     |         |      |        |     |       | apple     
+ 0002       | Deezer   | Natts     |         |      |        |     |       | banana    
+(2 rows)
+

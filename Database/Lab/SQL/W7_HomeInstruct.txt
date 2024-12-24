@@ -1,0 +1,234 @@
+--1
+
+--a
+SELECT n.tenNCC
+FROM (NCC n JOIN Cungcap c using (MSNCC)) 
+JOIN Mathang m using (MSMH)
+WHERE 
+	m.Mausac = 'Do';
+
+--b
+SELECT n.MSNCC
+FROM (NCC n JOIN Cungcap c using (MSNCC)) 
+JOIN Mathang m using (MSMH)
+WHERE 
+	m.Mausac = 'Do';
+UNION
+SELECT n.MSNCC
+FROM (NCC n JOIN Cungcap c using (MSNCC)) 
+JOIN Mathang m using (MSMH)
+WHERE 
+	m.Mausac = 'Xanh';
+
+--c
+SELECT n.MSNCC
+FROM (NCC n JOIN Cungcap c using (MSNCC)) 
+JOIN Mathang m using (MSMH)
+WHERE 
+	m.Mausac = 'Do';
+INTERSECT
+SELECT n.MSNCC
+FROM (NCC n JOIN Cungcap c using (MSNCC)) 
+JOIN Mathang m using (MSMH)
+WHERE 
+	m.Mausac = 'Xanh';
+
+--d
+SELECT NCC.MSNCC
+FROM NCC n
+WHERE NOT EXISTS (
+    SELECT *
+    FROM Mathang m
+    WHERE Mausac = 'Đỏ'
+    AND NOT EXISTS (
+        SELECT *
+        FROM Cungcap c
+        WHERE c.MSMH = m.MSMH
+        AND c.MSNCC = n.MSNCC
+    )
+);
+
+--C2
+SELECT NCC.MSNCC
+FROM NCC
+JOIN Cungcấp ON NCC.MSNCC = Cungcấp.MSNCC 
+JOIN Mặthàng ON Cungcấp.MSMH = Mặthàng.MSMH
+WHERE Mặthàng.Màusắc = 'Đỏ'
+GROUP BY NCC.MSNCC
+HAVING COUNT(DISTINCT Mặthàng.MSMH) = (
+    SELECT COUNT(*)
+    FROM Mặthàng
+    WHERE Màusắc = 'Đỏ'
+);
+
+--e
+SELECT NCC.MSNCC
+FROM NCC
+WHERE NOT EXISTS (
+    SELECT *
+    FROM Mặthàng
+    WHERE (Màusắc = 'Đỏ' OR Màusắc = 'Xanh')
+    AND NOT EXISTS (
+        SELECT *
+        FROM Cungcấp
+        WHERE Cungcấp.MSMH = Mặthàng.MSMH
+        AND Cungcấp.MSNCC = NCC.MSNCC
+    )
+);
+
+--f
+SELECT NCC.MSNCC
+FROM NCC
+WHERE NOT EXISTS (
+    SELECT *
+    FROM Mặthàng
+    WHERE Màusắc = 'Đỏ'
+    AND NOT EXISTS (
+        SELECT *
+        FROM Cungcấp
+        WHERE Cungcấp.MSMH = Mặthàng.MSMH
+        AND Cungcấp.MSNCC = NCC.MSNCC
+    )
+)
+OR NOT EXISTS (
+    SELECT *
+    FROM Mặthàng
+    WHERE Màusắc = 'Xanh'
+    AND NOT EXISTS (
+        SELECT *
+        FROM Cungcấp
+        WHERE Cungcấp.MSMH = Mặthàng.MSMH
+        AND Cungcấp.MSNCC = NCC.MSNCC
+    )
+);
+
+--2
+--a
+SELECT Họtên, Tuổi
+FROM Nhânviên
+WHERE MSNV IN (
+    SELECT MSNV
+    FROM Làmviệc
+    WHERE MSP IN (
+        SELECT MSP
+        FROM Phòng
+        WHERE TênPhòng = 'Tổ chức' OR TênPhòng = 'Kế hoạch'
+    )
+    GROUP BY MSNV
+    HAVING COUNT(DISTINCT MSP) = 2
+);
+
+--b
+SELECT MSP, COUNT(DISTINCT MSNV) AS SốNhânViên
+FROM Làmviệc
+GROUP BY MSP
+HAVING COUNT(DISTINCT MSNV) > 20;
+
+--c
+SELECT Họtên
+FROM Nhânviên
+WHERE Lương > (
+    SELECT SUM(Ngânquỹ)
+    FROM Phòng
+    WHERE MSP IN (
+        SELECT MSP
+        FROM Làmviệc
+        WHERE MSNV = Nhânviên.MSNV
+    )
+);
+
+--d
+SELECT MSTrưởngphòng
+FROM Phòng
+GROUP BY MSTrưởngphòng
+HAVING MIN(Ngânquỹ) > 1000000;
+
+--e
+SELECT Họtên
+FROM Nhânviên, Phòng
+WHERE Nhânviên.MSNV = Phòng.MSTrưởngphòng AND Ngânquỹ = (
+    SELECT MAX(Ngânquỹ)
+    FROM Phòng
+);
+
+--f
+SELECT MSTrưởngphòng
+FROM Phòng
+GROUP BY MSTrưởngphòng
+HAVING SUM(Ngânquỹ) > 5000000;
+
+--4
+--a
+SELECT TênMH 
+FROM Môn_học;
+
+--b
+SELECT MSSV, Họtên, Ngày_sinh 
+FROM Sinh_viên 
+WHERE Quê_quán = 'Hà nội';
+--c
+SELECT DISTINCT MSSV 
+FROM Đăngký 
+WHERE MSMH = 'M1' OR MSMH = 'M2';
+--d
+SELECT TênMH 
+FROM Môn_học 
+WHERE MSMH IN 
+	(SELECT MSMH 
+	 FROM Đăngký 
+	 WHERE MSSV = 20042325);
+
+--e 
+SELECT Họtên 
+FROM Sinh_viên 
+WHERE MSSV IN 
+	(SELECT DISTINCT MSSV 
+	 FROM Đăngký 
+	 WHERE MSMH IN 
+		(SELECT MSMH 
+	  	 FROM Môn_học 
+		 WHERE TênGV = 'Lê Quân'));
+--f
+SELECT TênMH, Điểm 
+FROM Môn_học JOIN Đăngký ON Môn_học.MSMH = Đăngký.MSMH 
+WHERE MSSV IN (
+	SELECT MSSV 
+	FROM Sinh_viên 
+	WHERE Họtên = 'Nguyễn Văn A');
+--g
+SELECT MSSV 
+FROM Sinh_viên 
+WHERE NOT EXISTS (
+	SELECT * FROM Môn_học 
+	WHERE TênGV = 'Lê Quân' AND MSMH NOT IN (
+		SELECT MSMH 
+		FROM Đăngký 
+		WHERE Sinh_viên.MSSV = Đăngký.MSSV));
+--h
+SELECT TênMH 
+FROM Môn_học 
+WHERE MSMH NOT IN (
+	SELECT DISTINCT MSMH 
+	FROM Đăngký);
+--i
+SELECT Họtên 
+FROM Sinh_viên 
+WHERE MSSV IN (
+	SELECT MSSV 
+	FROM Đăngký GROUP BY MSSV HAVING COUNT(*) >= 5);
+--j
+SELECT AVG(Điểm) 
+FROM Đăngký 
+WHERE MSSV IN (
+	SELECT MSSV 
+	FROM Sinh_viên 
+	WHERE Họtên = 'Nguyễn Văn A');
+--k
+SELECT Họtên 
+FROM Sinh_viên JOIN Đăngký ON Sinh_viên.MSSV = Đăngký.MSSV JOIN Môn_học ON Môn_học.MSMH = Đăngký.MSMH 
+WHERE TênMH = 'CSDL' AND Điểm = 
+	(SELECT MAX(Điểm) 
+	 FROM Đăngký JOIN Môn_học ON Môn_học.MSMH = Đăngký.MSMH 
+	 WHERE TênMH = 'CSDL');
+
+

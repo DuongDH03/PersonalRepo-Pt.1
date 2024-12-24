@@ -1,0 +1,20 @@
+				XÁC THỰC DANH TÍNH
+
+
+-Kiểm soát truy cập
+ + Ai đang truy cập?
+ + Có đúng quyền ko?
+
+
+==============================================
+
+1, Xác thực = mật khẩu
+2, 1 số giao thức xác thực 
+
+-Xác thực 1 chiều dựa trên hệ mật mã KĐX
+ +Hoạt động trên truyền ko bí mật  
+ +Hàm f an toàn
+ +Hạn chế: Password lưu bí mật
+
+-Xác thực 2 chiều KĐX
+ +Khóa truyền tin phải khác nhau để ko đối xứng

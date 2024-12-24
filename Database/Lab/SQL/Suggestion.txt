@@ -1,0 +1,13 @@
+Cần phải phân biệt người dùng thường và verified dựa trên 1 điểm số
+
+Thằng có verified thì nó sẽ được nhiều offer sale nhiều hơn.
+
+User có verified sẽ được đẩy lên trên trong phần đánh giá
+
+
+------------
+
+Nhà phát hành game với tag verified sẽ được "feature" trên "New publish"
+
+Tag verified sẽ giúp cho nhà phát hành đạt được độ lan rộng rãi hơn (liên quan đến quảng cáo)
+

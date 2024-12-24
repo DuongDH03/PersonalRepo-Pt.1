@@ -1,0 +1,17 @@
+Chap 1: 28,30,33,35 MIPS
+Chap 2: 9,14,17,20,25,30
+Chap 3: 13,14,28,36 ("subi" doesnt exist),39
+	pre:-5 nop
+	-4	 nop
+	-3	 nop
+	-2	 nop
+	-1	 beq  $, $, pre (=-5) (if next then =4)
+	0	 nop
+	1	 nop
+	2	 nop
+	3	 nop
+	next:4 nop
+Chap 4: 8,10,11
+Chap 5: 73
+Chap 6: 9,37
+		

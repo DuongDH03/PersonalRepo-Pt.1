@@ -1,0 +1,281 @@
+Các câu hỏi truy vấn khuyến nghị:
+-- 1. In ra những người dùng đã gắn bó hệ thống được 2 năm: 
+-- C1
+SELECT *
+FROM users
+WHERE (SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE, create_time))) >= 2;
+
+-- Phương án này sử dụng truy vấn con để tính toán khoảng thời gian từ thời điểm hiện tại đến bây giờ đối với TỪNG hàng. Hoàn toàn không hiệu quả và không thể sử dụng Index
+
+-- C2
+SELECT *
+FROM users
+WHERE create_time <= CURRENT_DATE - INTERVAL '2 years';
+
+-- Có thể sử dụng Index trên 'create_time' để tìm kiếm theo Index trong 1 thuộc tính 'create_time' với điều kiện nó bé hơn thời gian từ bây giờ đến thời điểm tạo ra là 2 năm (Đây gần như là một hằng số với câu truy vấn này), có thể tối ưu câu truy vấn này
+
+2+ In ra những người dùng mua được từ 10 game trở lên
+--C1
+SELECT *
+FROM users
+WHERE (
+    SELECT COUNT(*)
+    FROM purchase
+    WHERE purchase.user_id = users.user_id
+) > 10;
+
+-- Với mỗi 1 User được kiểm tra ở WHERE, lại phải chạy query phụ và duyệt qua xem có đếm đủ số game được mua không. Hiển nhiên là không hiệu quả
+
+--C2
+WITH purchase_counts AS (
+    SELECT user_id, COUNT(*) as game_count
+    FROM purchase
+    GROUP BY user_id
+    HAVING COUNT(*) > 10
+)
+SELECT users.*
+FROM users
+JOIN purchase_counts
+ON users.user_id = purchase_counts.user_id;
+
+--C3
+SELECT users.*
+FROM users
+JOIN (
+    SELECT user_id, COUNT(*) as game_count
+    FROM purchase
+    GROUP BY user_id
+    HAVING COUNT(*) > 10
+) purchase_counts
+ON users.user_id = purchase_counts.user_id;
+
+-- Cách 2 và 3 điều tạo ra 1 bảng nhỏ mới từ truy vấn con để nối vào bảng User, không cần phải duyệt và tạo bảng nhỏ theo từng bản ghi ở trong câu lệnh WHERE, nên có thể sử dụng Index cho user_id để tăng hiệu năng cho câu lệnh 
+
+3. In ra những người dùng mua nhiều 5 game trở lên thuộc thể loại "RPG".
+--C1
+SELECT u.*
+FROM users u
+JOIN purchase p ON u.user_id = p.user_id
+JOIN belongs_to b ON p.game_id = b.game_id
+JOIN genres g ON b.genre_id = g.genre_id
+WHERE g.genre_name = 'RPG'
+GROUP BY u.user_id
+HAVING COUNT(*) > 5;
+
+--C2
+SELECT u.*
+FROM users u
+JOIN (
+    SELECT p.user_id, COUNT(*) as purchase_count
+    FROM purchase p
+    JOIN belong_to b ON p.game_id = b.game_id
+    JOIN genres g ON b.genre_id = g.genre_id
+    WHERE g.genre_name = 'RPG'
+    GROUP BY p.user_id
+    HAVING COUNT(*) > 5
+) purchase_counts
+ON u.user_id = purchase_counts.user_id;
+
+-- 2 phương án trên được đánh giá là hiệu năng khá tương đồng với nhau, do cũng cùng khối lượng nối các bảng với nhau, và nối các bảng với điều kiện trong câu lệnh con trong mệnh đề IN ở phương án cũng không giảm bớt đi số lượng bản ghi
+
+4+ Danh sách các người dùng đã mua game nhưng bị ban
+-- C1
+SELECT DISTINCT users.*
+FROM users
+JOIN purchase ON users.user_id = purchase.user_id
+WHERE users.status = false;
+-- Sử dụng Distinct sẽ bắt buộc hệ thống phải nhớ lại những bản ghi nào đã có chưa
+
+--C2
+SELECT *
+FROM users
+WHERE status = false
+AND EXISTS (
+    SELECT 1
+    FROM purchase
+    WHERE purchase.user_id = users.user_id
+);
+-- Sử dụng Exist như trên sẽ lọc ra những bản ghi có tồn tại trong Purchase trong mệnh đề WHERE ở trước, hơn thế nữa còn có thể sử dụng Index cho user_id
+
+5. Các game có rating trên 8.0 và doanh thu thấp hơn 10000
+SELECT g.name, gr.rating, gre.revenue
+FROM games g
+JOIN game_rate gr ON g.game_id = gr.game_id
+JOIN game_revenue gre ON g.game_id = gre.game_id
+WHERE gr.rating > 8.0 AND gre.revenue < 10000;
+
+6. Game được nhiều người mua nhất vào tháng 3/2023
+--C1
+SELECT g.name, COUNT(*) as purchase_count
+FROM games g
+JOIN purchase p ON g.game_id = p.game_id
+WHERE date_part('year', p.time) = 2023 AND date_part('month', p.time) = 3
+GROUP BY g.game_id, g.name
+ORDER BY purchase_count DESC;
+
+--C2
+SELECT g.name, purchase_counts.purchase_count
+FROM games g
+JOIN (
+    SELECT game_id, COUNT(*) as purchase_count
+    FROM purchase
+    WHERE date_part('year', time) = 2023 AND date_part('month', time) = 3
+    GROUP BY game_id
+) purchase_counts
+ON g.game_id = purchase_counts.game_id
+ORDER BY purchase_counts.purchase_count DESC;
+
+-- 2 câu lệnh trên về cơ bản cũng hoạt động tương tự nhau, nối bảng games với purchase, lọc ra điều kiện, và đếm theo nhóm. Tuy nhiên phương án thứ 2 lại nhóm và lọc điều kiện trước rồi mới nối nên có khả năng sẽ lọc ra ít bản ghi hơn. Mặc dù ít bản ghi hơn nhưng khi nối vào vẫn phải duyệt qua các bản ghi ở bảng games nên khó có thể phán đoán được cái nào thực sự hiệu quả hơn. Nhưng kết luận chung, là 2 phương án trên đều có hiệu năng khá tương đương với nhau
+
+7. Game thuộc thể loại "Sport" có doanh thu cao nhất tính đến nay
+--C1
+SELECT g.name, gre.revenue
+FROM games g
+JOIN belongs_to b ON g.game_id = b.game_id
+JOIN genres ge ON b.genre_id = ge.genre_id
+JOIN game_revenue gre ON g.game_id = gre.game_id
+WHERE ge.genre_name = 'Sport'
+ORDER BY gre.revenue DESC
+LIMIT 1;
+
+--C2
+WITH max_sport_revenue AS (
+    SELECT MAX(revenue) as max_revenue
+    FROM game_revenue gr
+    JOIN games ga ON gr.game_id = ga.game_id
+    JOIN belongs_to be ON ga.game_id = be.game_id
+    JOIN genres gen ON be.genre_id = gen.genre_id
+    WHERE gen.genre_name = 'Sport'
+)
+SELECT g.name, gre.revenue
+FROM games g
+JOIN belongto b ON g.game_id = b.game_id
+JOIN genres ge ON b.genre_id = ge.genre_id
+JOIN game_revenue gre ON g.game_id = gre.game_id
+JOIN max_sport_revenue msr ON gre.revenue = msr.max_revenue
+WHERE ge.genre_name = 'Sport';
+
+-- Phương án thứ nhất là sắp xếp các các bảng nối vào nhau để ra được các game có thể loại 'Sport' theo thứ tự của Revenue trong VIEW game_revenue và lấy ra 1 để làm Max. Cách này có hạn chế là nếu như các game có cùng Revenue sẽ không được hiển thị quá 2. Cách thứ 2 lại sử dụng hàm MAX để hiển thị được ra, tuy nhiên lại phải sử dụng truy vấn con trong WITH để lọc ra các game có Revenue lớn nhất rồi nối với các bảng còn lại để hiển thị được tên, như thế sẽ hiển thị được TẤT CẢ các game có cùng giá trị cao nhất của doanh thu. Thực tế là 2 phương án trên cũng có khả năng mà hiệu năng tương tự, phương án 2 tưởng chừng sử dụng câu lệnh con, nhưng lại lọc ra số bản ghi cũng ít như điều kiện phương án đầu.
+
+8. Game được phân vào 3 thể loại trở lên
+--C1
+WITH genre_counts AS (
+    SELECT game_id, COUNT(*) as genre_count
+    FROM belongs_to
+    GROUP BY game_id
+)
+SELECT g.name
+FROM games g
+JOIN genre_counts b ON g.game_id = b.game_id
+WHERE b.genre_count > 3;
+-- Sử dụng được Index cho các thuộc tính của bảng belongs_to để tăng hiệu năng
+
+--C2
+SELECT g.name
+FROM games g
+JOIN belongs_to b ON g.game_id = b.game_id
+GROUP BY g.game_id, g.name
+HAVING COUNT(DISTINCT b.genre_id) > 3;
+-- Cần phải sử dụng Distinct để có thể đếm được các thể loại khác nhau, nhưng sử dụng nó lại phải tốn kém chi phí lưu trữ, tuy nhiên vẫn có thể sử dụng Index trên bảng belongs_to để tìm kiếm 
+
+9* Game được ưa thích nhất thuộc thể loại "Action" (không tính theo doanh thu mà tính theo lượt mua và wishlist)
+WITH action_games AS (
+    SELECT g.game_id, g.name
+    FROM games g
+    JOIN belongs_to b ON g.game_id = b.game_id
+    JOIN genres ge ON b.genre_id = ge.genre_id
+    WHERE ge.genre_name = 'Action'
+),
+popularity AS (
+    SELECT game_id, COUNT(*) as popularity_count
+    FROM (
+        SELECT game_id FROM purchase
+        UNION ALL
+        SELECT game_id FROM wishlist
+    ) p
+    GROUP BY game_id
+),
+max_popularity AS (
+    SELECT MAX(popularity_count) as max_popularity_count
+    FROM popularity p
+    JOIN action_games a ON p.game_id = a.game_id
+)
+SELECT a.name, p.popularity_count
+FROM action_games a
+JOIN popularity p ON a.game_id = p.game_id
+JOIN max_popularity m ON p.popularity_count = m.max_popularity_count;
+
+-- Ta sử dụng 3 bảng phụ trong mệnh đề WITH để lọc theo các tiêu chí là theo thể loại 'Action', bảng hợp của purchase và wishlist, và max số bản ghi của bảng hợp đó. Tuy nhiên phương án này sẽ có 1 phần khá nặng là hợp UNION ALL giữa 2 bảng purchase với wishlist. Ta có thể sử dụng phương án dưới đây là tách 2 bảng ra và tính theo công thức:
+
+--C2
+WITH action_games AS (
+    SELECT g.game_id, g.name
+    FROM games g
+    JOIN belongs_to b ON g.game_id = b.game_id
+    JOIN genres ge ON b.genre_id = ge.genre_id
+    WHERE ge.genre_name = 'Action'
+),
+purchase_counts AS (
+    SELECT game_id, COUNT(*) as purchase_count
+    FROM purchase
+    GROUP BY game_id
+),
+wishlist_counts AS (
+    SELECT game_id, COUNT(*) as wishlist_count
+    FROM wishlist
+    GROUP BY game_id
+),
+popularity AS (
+    SELECT a.game_id, COALESCE(p.purchase_count, 0) + COALESCE(w.wishlist_count, 0) as popularity_count
+    FROM action_games a
+    LEFT JOIN purchase_counts p ON a.game_id = p.game_id
+    LEFT JOIN wishlist_counts w ON a.game_id = w.game_id
+),
+max_popularity AS (
+    SELECT MAX(popularity_count) as max_popularity_count
+    FROM popularity
+)
+SELECT a.name, p.popularity_count
+FROM action_games a
+JOIN popularity p ON a.game_id = p.game_id
+JOIN max_popularity m ON p.popularity_count = m.max_popularity_count;
+
+-- Ở phương án này ta tách các tiêu chí đếm các bản ghi từ wishlist và purchase thành các bảng khác nhau và với bảng tính độ nổi tiếng: Đếm số bản ghi của 2 bảng trên với hàm COALESCE trong trường hợp mà game không có Purchase nhưng có Wishlist/ Có Purchase nhưng không có Wishlist khi nối ngoài ở các bảng. Sử dụng bảng này để tính được độ nổi tiếng của game và tìm ra game nào có độ nổi tiếng nhất theo Purchase và Wishlist. Phương án này sẽ bỏ được việc hợp 2 bảng trong phương án 1, có khả năng tối ưu hơn.
+
+--10. VIEW hiển thị thể loại được yêu thích nhất (trung bình các đánh giá của game trong thể loại này là cao)  
+CREATE VIEW popular_genres AS
+    SELECT g.genre_name, AVG(ga.rating) AS avg_rating
+    FROM genres g
+    JOIN games ga USING (game_id) 
+    JOIN game_rate USING (game_id)
+    GROUP BY g.genre_name
+    ORDER BY avg_rating DESC;
+
+10. 10 game mới được cập nhật gần đây nhất
+11. Thể loại game được ưa thích nhất (chứa nhiều bản game được tải nhất)
+12. Game có đánh giá tranh cãi nhất (Chênh lệnh giữa min max rating và average là lớn nhất)
+13. Rating nào mà được nhiều người chơi đánh giá nhất cho "Celestial Odyssey"? 
+14. Game được mong chờ nhất (chưa hoàn thiện/ ra mắt nhưng có rating tích cực/ nhiều người wishlist)
+15. Game nào được nhiều người review nhất
+16. Game được update đây nhất.
+17. Người dùng nào hiện đang bị ban lâu nhất?
+18. Nhà phát triển có doanh thu cao nhất (trong thời gian nào đó)
+19. In ra các nhà phát triển đã phát triển nhiều nhất 1 game thuộc thể loại "Visual Novel"
+20. Thể loại game chủ đạo của nhà phát triển "Niltendo" (Trong thể loại, thể loại nào có nhiều game được nhà phát triển này tạo ra?)
+21* Thể loại game nào mang lại doanh thu cao nhất cho nhà phát triển "Niltendo"
+22. Các game đã được duyệt lên xu hướng bởi administrator "Idol hoc bong"
+23* Game có rating cao nhất đã bị gỡ khỏi cửa hàng
+24. Người dùng có review khắt khe nhất với các tựa game. (Rating đưa ra trung bình là thấp nhất)
+25. Game có nhiều đánh giá 1.0 nhất
+26* Game bị gỡ khỏi cửa hàng nhanh nhất.
+27* Nhà phát triển nào bị đánh giá tiêu cực nhất.
+28* In ra các giao dịch thanh toán vào Summer Sale (6/2023)
+29. In ra phiên bản hiện tại của "Hollow Knight: Silksong"
+30+ Game được ít người để ý đến nhất. (Số lượt tải/ngày thấp nhất)
+
+Các function và trigger:
+31* Kiểm tra xem giao dịch thực hiện có thành công hay không (do đủ tiền trong tài khoản, do người dùng không bị cấm, do game chưa bị gỡ). Nếu thành công thì lưu thông tin vào purchase và thư viện nếu có, đồng thời thực hiện trừ tiền trong tài khoản, cùng với update doanh số, số bản được bán của game và nhà phát triển.
+32* Kiểm tra xem người dùng đã mua game chưa, nếu chưa thì không được để review (hoặc review sẽ không được tính vào trọng số rating trung bình) hoặc chơi game
+33+ Tính toán rating một cách tự động (trên cơ sở của 32). total(new.rating)/count(review_user) where game_id = "game_id";
+
+Tạo view cụ thể cho từng người dùng và cấp quyền. Gồm: Người dùng thông thường, nhà phát triển và quản trị viên 

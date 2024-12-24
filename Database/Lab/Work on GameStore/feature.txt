@@ -1,0 +1,43 @@
+**** USER *************************************************
+
+- Library: Có thể trở thành 1 View riêng
+	View: từ bảng Game, User
+              ---> Tuy nhiên Library là cho cá nhân? View lại cho số đông lớn
+					
+- Ví của người dùng: Hay là Balance. 
+	Như đã đề cập lúc trước, chỉ cần có một nút nhập tiền, tương đương với 1 lệnh UPDATE trong CSDL. Nhưng liệu lệnh UPDATE có cộng tổng được không? (Khả năng cao phải viết 1 Function)
+	Tương tự khi mua game thì hiển nhiên số tiền cũng phải trừ đi	
+
+				
+**** GAME: CÂU HỎI LỚN NHẤT KHI ĐƯA RA NHỮNG TÍNH NĂNG SAU: 
+	Liệu những tính năng này có liên quan đến CSDL? Nghĩa là những thông tin này liệu có phải được lưu trên một CSDL nào đó không?
+
+- Recommendation: 
+  Đây mới thực sự là phần phức tạp. Recommendation sẽ phụ thuộc vào tùy những đánh giá và các thể loại game đã mua của người dùng. Nghĩa là nó sẽ mang tính cá nhân.
+		Đếm COUNT các Genre game trong Library 
+
+
+- Đánh giá game: Thống kê "sao" (tương đương với 1 số thực) của game từ người dùng để đưa ra Trending
+	Trending: Cần tạo Thuật toán sắp xếp độ nổi tiếng (ORDER BY), sẽ áp dụng để tạo một View cho Free game
+
+- Best seller: Thống kê Revenue của game để đưa ra 1 View, sẽ trừ Free Games vì đã thiết lập là Free Game không có Revenue
+
+			MỘT CÂU HỎI LỚN KHÁC:
+		Chắc chắn là cần Trigger để cập nhật những View này, tuy nhiên vào THỜI ĐIỂM NÀO? Liệu chúng ta có thể làm được theo định kỳ không (TRIGGER là theo thao tác UPDATE, chứ không phải định kỳ)
+
+**** DEV *******************************************
+		Tạo 1 function để tính Revenue của từng Dev (tổng cộng của các game)  --------------------> 1 Câu truy vấn SQL
+		Upload game: Cần Trigger Function trong trường hợp lặp,...
+		Upload game: Cần phải đưa game lên để xem xét duyệt
+
+
+**** ADMIN *****************************************
+- Yêu cầu báo cáo người dùng:
+	1 View từ bảng Monitor, Users, Admin
+					Status: 1/0:     Ban, Ko ban
+
+- Duyệt game:
+	1 View duyệt: 1 View từ bảng Control, Game, Admin
+					Status: là trạng thái ĐANG PHÁT TRIỂN, ĐANG BÁN
+
+RÕ RÀNG quyền truy cập các View này chỉ cho các Admin

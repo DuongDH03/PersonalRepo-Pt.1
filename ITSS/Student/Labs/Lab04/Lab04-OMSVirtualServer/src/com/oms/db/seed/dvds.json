@@ -1,0 +1,62 @@
+[
+	{
+		"type": "dvd",
+		"id": "dvd1",
+		"title": "Người Sắt (2008)",
+		"category": "Marvel",
+		"cost": "250000",
+		"barcode": "dvd1",
+		"description": "Người Sắt (tựa gốc tiếng Anh: Iron Man) là một bộ phim điện ảnh đề tài siêu anh hùng của Mỹ năm 2008 dựa trên nhân vật truyện tranh cùng tên của Marvel Comics. Phim do hãng Marvel Studios sản xuất và Paramount Pictures chịu trách nhiệm phân phối, đồng thời là bộ phim đầu tiên trong loạt phim điện ảnh thuộc Vũ trụ Điện ảnh Marvel (MCU)",
+		"quantity": 20,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"director": "Jon Favreau",
+		"studio": "Marvel Studios",
+		"language": "English",
+		"length": 30000
+	},
+	{
+		"type": "dvd",
+		"id": "dvd2",
+		"title": "Công viên kỷ Jura",
+		"category": "Science fiction",
+		"cost": "270000",
+		"barcode": "dvd2",
+		"description": "Công viên kỷ Jura (tên gốc tiếng Anh: Jurassic Park) là phim điện ảnh phiêu lưu khoa học viễn tưởng của Mỹ năm 1993 do Steven Spielberg đạo diễn và Kathleen Kennedy cùng Gerald R. Molen phụ trách sản xuất",
+		"quantity": 30,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"director": "Steven Spielberg",
+		"studio": "Universal Studios",
+		"language": "English",
+		"length": 20000
+	},
+	{
+		"type": "dvd",
+		"id": "dvd3",
+		"title": "Người Sắt 3 (2013)",
+		"category": "Marvel",
+		"cost": "250000",
+		"barcode": "dvd3",
+		"description": "Tony Stark miệt mài chế tạo các bộ giáp để bảo vệ mình và những người thân yêu. Cùng lúc đó, tên khủng bố Mandarin liên tục thực hiện các vụ đánh bom bằng công nghệ Extremis và làm bị thương Happy Hogan, bạn thân của Stark. Stark thách thức Mandarin và bị hắn cho người đánh sập nhà. Sau khi thoát chết, Tony Stark điều tra và biết kẻ đứng sau tất cả là khoa học gia Aldrich Killian, còn Mandarin kia chỉ là một diễn viên đóng giả.",
+		"quantity": 20,
+		"weight": 1.2,
+		"dimension": {
+			"width": 5.7,
+			"height": 4.8,
+			"depth": 3.2
+		},
+		"director": "Shane Black",
+		"studio": "Marvel Studios",
+		"language": "English",
+		"length": 35000
+	}
+]

@@ -1,0 +1,44 @@
+I, Mô tả nghiệp vụ 
+1, Mô tả chung: 
+- Cửa hàng để người dùng có thể mua và đánh giá game. 
+- Các nhà phát hành game có thể đăng tải game lên cửa hàng
+- Người quản lý sẽ kiểm soát game và người dùng
+2, Phân loại người dùng:  
+a, NGƯỜI DÙNG (Người tải game - USER): 
+- Cần có tài khoản đăng kí với hệ thống để tải game. Nếu không đăng kí tài khoản thì chỉ có thể xem game đang được bán trên nền tảng.  
+- Thông tin tài khoản: Các thông tin cơ bản như: Tên, mã ID định danh, mật khẩu email, số điện thoại, số tiền trong tài khoản, và thanh trạng thái (bị cấm hay không cấm)
+- Các thao tác trên cửa hàng 
++Để mua game, người dùng có thể tìm kiếm tên game mình muốn mua bằng thanh tìm kiếm, hoặc tìm hiểu những tựa game đang xu hướng, được yêu thích dựa trên điểm số đánh giá game, hoặc những tựa game được đề xuất. 
++Khi đã chọn được tựa game ưng ý, người dùng thực hiện mua game bằng cách sử dụng ví điện tử của hệ thống. Nếu tài khoản không đủ số dư thì thực hiện nạp thêm vào tài khoản để thanh toán. 
++Họ có thể đánh giá game theo số điểm (sao). Game tính trung bình các đánh giá và đưa ra rating chung cho game đấy
++Còn nếu chưa mua thì chỉ có thể xem đánh giá game của người khác. 
+b, NHÀ PHÁT TRIỂN GAME (DEVELOPER): 
+- Bao gồm những thông tin: mã ID định danh, tên, email, website (nếu có), ngày thành lập
+- Upload game lên trên hệ thống
+- Trong thông tin của người nhà phát triển, hệ thống có thể thống kê được doanh thu của các game đã đăng tải với điều kiện các game phải là game trả phí
+- Game khi được đưa lên hệ thống sẽ cần phải được duyệt bởi quản trị viên để có thể được nhìn thấy bởi những người dùng thông thường khác. 
+- Họ cũng có thể thực hiện gỡ game của mình đăng lên nếu muốn. 
+c, QUẢN TRỊ VIÊN (ADMINISTRATOR): 
+- Người trong công ty, có khả năng duyệt game đưa lên hệ thống, duyệt cung cấp quyền cho các nhà phát triển game. Bao gồm những thông tin: Mã ID định danh, tên quản trị 
+- Chỉnh sửa các trạng thái đối với game và người dùng: Cấm, không cấm,…
+- Tất cả hành động của Quản trị viên đều sẽ bị ghi lại để quản lý và xử lý khiếu nại.  
+3, Trò chơi (Game): 
+- Phân loại game: Sẽ có nhiều tiêu chí để đánh giá các tựa game, chẳng hạn như theo thể loại game, theo giá game, theo độ phổ biến của game trong cộng đồng... 
+- Giá bán game: Giá bán là do người đăng tải niêm yết. Tùy theo sự kiện cửa hàng có thể tạo một đợt sale cho game. Trong cửa hàng, có thể có phân loại các game bán chạy, Best seller, Editor’s choice,… 
+- Đương nhiên các trò chơi vẫn có thể để tải xuống miễn phí (Free). Lúc này trò chơi sẽ không thống kê doanh thu (không thỏa thuận tính theo doanh thu), mà chỉ thống kê lượt tải/ tương tác để có thể được giới thiệu theo xu hướng hấp dẫn người dùng 
+- Đánh giá game theo sao, và có thể được “trending” khi đạt lượt sao thống kê kỷ lục theo tháng  
+- Wish list: Tương đương với Danh sách yêu thích. Người dùng có thể đưa một game vào trong danh sách yêu thích của mình mà không cần phải mua nó. 
+4, Các chức năng cho ứng dụng: 
+- Sẽ được xem các tất cả các game với thông tin, được sắp xếp vào các thể loại 
+- Được xem Xu hướng, bảng xếp hạng các game được cập nhật vào 1 khoảng thời gian nhất định ( theo tháng, theo tuần,…) 
+- Được truy cập và xem thông tin cụ thể của từng game, với các đánh giá của người dùng khác.  
+- Đăng kí tài khoản: Xác thực thông tin cá nhân bằng các định danh có thật 
+- Wish list (được đề cập ở trên) 
+- Tìm kiếm game: Bằng thanh tìm kiếm, bằng các tag thể loại, bằng tab xu hướng hoặc tab đề xuất 
+- Nạp tiền vào ví tài khoản 
+- Mua và đánh giá game, với mỗi lần mua chỉ được 1 game 
+- Trong trang cá nhân nhà phát hành, tra cứu được số liệu về  doanh thu của các trò chơi đã đăng tải 
+- Có khả năng yêu cầu xóa/ báo cáo người dùng khác (kể cả Quản trị viên) 
+- Với quản trị viên 
++ Duyệt game lên hệ thống 
++ Quản lí người dùng thông thường: Cấm, xóa tài khoản, đánh giá,… 

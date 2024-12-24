@@ -1,0 +1,22 @@
+	ACTORS
+
+- Bank Customer
+- Bank Consortium
+- Cashier
+- Maintenance crew
+
+	USE CASE
+- Withdraw cash
+- Deposit money
+- Login to the system
+- Query balance
+- Transfer money
+
+//- Process the transaction request (nope???)
+
+- Print logs
+- Start software
+- Stop software
+- Back up software
+
+- Collect deposits

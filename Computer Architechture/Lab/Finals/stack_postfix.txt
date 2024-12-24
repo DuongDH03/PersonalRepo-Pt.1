@@ -1,0 +1,44 @@
+(1+2)*(3-4)-(4/2)/(6/3)
+
+*** Precedence :   * / %    >     + -
+
+
+post: 1 2+ 3 4-* 4 2/ 6 3//-
+
+S	S	S	S	S			
+
+			/
+	-	/	(
++	(	(	/	/
+(	*	-	-	-
+
+
+
+Algorithm:
+
+If c = '(' 
+	 PUSH into S;
+
+If c = Num 
+	 postfix += c;
+
+If c = ')' 
+	 while  ( S not NULL and top(S) != '(' )
+			postfix += top(S)
+			pop(S)
+	 pop				// Pop until '('
+
+Else					// Add the operators
+	If preced(c) > preced (top(S)) 		
+		push(c)	
+	Else 
+		while(top(S) not NULL and preced(c) <= preced(top(S))
+			postfix += top(S) 	//store and pop until found higher prece
+			pop(S)
+		push(c)
+while (S not NULL)		// Remaining operators
+	postfix += top(S)
+	pop(S)
+
+	
+

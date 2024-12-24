@@ -1,0 +1,154 @@
+create or replace function deez (inout a int4, inout b int4, out result int4, out res int4)as
+$$
+begin 
+	result := a+b;
+	res := a*4+b;
+end;
+$$
+language plpgsql;
+
+CREATE FUNCTION test(IN val1 int4, IN val2 int4, out result
+int4) AS
+$$DECLARE vmultiplier int4 := 3;
+BEGIN
+result := val1 * vmultiplier + val2;
+END; $$
+LANGUAGE plpgsql;
+
+
+-- create another dude
+create role "joe" with login password '1';
+
+-- grant him the permission
+grant execute on function test to joe ;
+grant usage on schemas to joe;
+
+--1
+
+\c edudb_v2
+ 
+create function number_of_students2 (v_clazz_id character, out count integer) returns integer as
+$$
+begin
+	select count(*) into count
+	from student 
+	where clazz_id = v_clazz_id;
+end;
+$$
+language plpgsql;
+
+grant execute on function number_of_students to joe;
+
+grant select on student to joe;
+grant select on clazz to joe;
+
+grant usage on schema public to "joe";
+
+ALTER TABLE clazz ADD COLUMN number_students INTEGER;
+
+-- what if the clazz doesn't exist? -> output a message,... in that case
+
+--2
+
+create function update_number_students(clazz_id,
+
+create or replace function update_number_students() returns void
+AS $$
+begin
+    update clazz
+    set number_students = (SELECT count(*) 
+					FROM student 
+					WHERE student.clazz_id = clazz.clazz_id);
+end;
+$$ LANGUAGE plpgsql;
+
+create or replace function update_number_student() returns void 
+AS $$
+declare varclassid character
+begin 
+	for varclassid in select class_id from clazz LOOP
+	update clazz 
+	set number_students = number_of_students(varclassid)
+	where clazz_id = varclassid;
+end LOOP;
+$$ language plpgsql;
+
+
+	
+
+--3
+create table student_results (
+	student_id char(8) NOT NULL,
+	semester char(5)	NOT NULL,
+	gpa float, 
+	cpa float
+);
+
+
+alter table student_results add constraint student_fk foreign key (student_id) references student(student_id);
+alter table student_results add constraint result_pk primary key (student_id, semester) ;
+
+create function updateGPA_student(studentid character, vsemester character) returns void as
+$$
+begin 
+	insert into student_results (student_id, semester)
+	values (studentid, vsemester);
+
+	update student_results
+	set gpa = ( 
+		WITH tmp AS (
+		SELECT student_id, subject_id, credit, 									semester,e.midterm_score*(100 - 									s.percentage_final_exam)/100 + 									e.final_score*s.percentage_final_exam /100 as 							subject_score
+		FROM enrollment e join subject s using (subject_id))
+		
+		SELECT sum(subject_score * credit)/sum(credit) as gpa
+		FROM	tmp
+		WHERE student_id = studentid and semester = vsemester
+		GROUP BY student_id, semester)
+		WHERE 
+		student_id = studentid AND 
+		semester = vsemester; 
+end;
+$$ language plpgsql;
+
+
+-- function Ins (not related)
+create function ins(studentid character, vsemester character) returns void as
+$$ 
+BEGIN
+    IF NOT EXISTS (
+			SELECT * 
+			FROM student_results 
+			WHERE student_results.student_id = studentid AND semester = vsemester) 
+	   THEN
+        INSERT INTO student_results (student_id, semester)
+        VALUES (studentid, vsemester);
+END IF;	
+END;
+$$ language plpgsql;
+
+select ins('20160001','20171');
+
+-- function update student's gpa
+CREATE OR REPLACE FUNCTION updateGPA(semester INTEGER)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO student_results (student_id, semester, gpa)
+    SELECT student_id, semester, SUM(subject_score * credit) / SUM(credit)
+    FROM (
+        SELECT e.student_id, s.credit, (e.midterm_score * (100 - s.percentage_final_exam) / 100 + e.final_score * s.percentage_final_exam / 100) AS subject_score
+        FROM enrollment e
+        JOIN subject s ON e.subject_id = s.subject_id
+        WHERE e.semester = semester
+    ) subq
+    GROUP BY student_id, semester
+    ON CONFLICT (student_id, semester)
+    DO UPDATE SET gpa = EXCLUDED.gpa;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+

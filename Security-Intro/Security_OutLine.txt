@@ -1,0 +1,137 @@
+			MẬT MÃ 
+-Mã đối xứng
+	Mã cổ điển: Ceasar
+	Mã hiện đại:
+		Mã OTP (XOR)
+		Thuật toán DES, 2DES, 3DES
+		Thuật toán AES
+			Chê độ ECB (Con cánh cụt -> Vẫn ra đc cánh cụt)
+			Chế độ CBC (Con cánh cụt -> Nhiễu)
+				IV ngẫu nhiên (Giá trị khởi tạo)
+				Dịch vòng 
+				Có Padding
+			Chế độ CTR
+				IV ngẫu nhiên, IV+n...
+				Không cần Padding
+-Mã bất đối xứng: RSA 
+	Mã hóa = khóa công khai của bên đối phương (kU)
+	Giải mã = khóa cá nhân của đối phương      (kR)
+	
+
+==================================================================================
+
+				PHÂN PHỐI KHÓA
+*** N: là các GIÁ TRỊ ngẫu nhiên, chống tấn công phát lại
+    T: là mác thời gian để chống tấn công phát lại
+
+-Phân phối khóa đối xứng
+	Phân phối không tập trung (Truyền thẳng A-> B)
+	Phân phối khóa tập trung (Sử dụng bên thứ 3: KDC)
+
+-Phân phối khối bất đối xứng (Chứng thực rằng các khóa công khai là của chủ sở hữu)
+		kUA là của thằng A, ... 
+
+	Phân phối không tập trung (Kiểu này không phổ biến)
+	Phân phối tập trung( Sử dụng bên thứ 3)
+		Sử dụng PKA để xác thực 2 bên
+		Sử dụng CA để cấp chứng chỉ để 2 bên tự xác thực
+
+========================================================================================
+
+			CHỮ KÝ SỐ
+- Khái niệm: 
+- Mô hình sử dụng:
+- Giao thức chữ ký:
+	Có trọng tài Trent
+	Chữ ký mù (RSA for Voting)
+	Chữ ký nhóm
+- Hạ tầng:
+	PKI: Xác thực khóa công khai 
+		Kiến trúc: Đơn CA, phân cấp
+	X.509: Chứa khóa công khai 
+
+
+===================================================================================
+
+			XÁC THỰC DANH TÍNH 
+Xác thực mật khẩu 
+	Băm mật khẩu Salt 
+Giao thức xác thực 
+	PAP (Password Authentication) 
+	Xác thực 1 chiều = mã đối xứng
+	Xác thực 1 chiều = mã không đối xứng
+	Giao thức CHAP (Challenge Handshake)
+	Giao thức EAP 
+
+	Xác thực 2 chiều ĐX - KĐX
+	Giao thức dạng Zero Knowledge (Extra)
+Giả mạo 
+
+OTP (One Time Password)
+	S/Key OTP 
+	HOTP (Hash OTP)
+	TOTP (Time OTP)
+	SMS OTP (Tin nhắn)
+
+	Xác thực đa yếu tố
+
+Single Sign On (SSO): 1 tài khoản, nhiều ứng dụng, 1 phiên làm việc
+
+============================================================================
+
+
+			PHÂN QUYỀN 
+
+Khái niệm
+	Mô hình AAA
+
+Ma trận điều khiển truy cập (ACM)
+	Không thể cài đặt full, nên phải phân rã theo cột/ hàng
+		Cột: ACL - Danh sách điều khiển truy cập
+		Dòng: CL - Danh sách năng lực
+
+Mô hình điều khiển truy cập 
+	DAC: Discretionary Access Control - Điều khiển truy cập tùy nghi
+	MAC: Mandatory Acess Control - Điều khiển truy cập cưỡng bức
+		• Ưu điểm:
+			Quản trị tập trung
+			Tính bảo mật cao
+		• Nhược điểm:
+			Đòi hỏi phải phân loại rõ ràng chủ thể và tài nguyên
+			Phạm vi ứng dụng hạn chế
+	
+	Bell-LaPadula: Kiểm soát truy cập cho mục tiêu bảo vệ
+		Phân loại quyền:
+			Top Secret > Secret > Confidential > Unclassified 
+		
+		Quy tắc: No read-up và No write-down
+
+	Biba: Bảo vệ tính toàn vẹn 
+		Phân loại tính toàn vẹn:
+			Crucial > Very Important > Important 
+		Quy tắc: No write-up và No read-down
+				Thực thi (Execute): chủ thể s1 thực thi s2 khi và chỉ khi s1 toàn vẹn hơn s2
+
+	Chinese Wall: Tài nguyên được chia thành nhiều nhóm tranh chấp 
+
+	RBAC: (Role based): Mỗi user được gán 1, nhiều role, và các role gán với các quyền truy cập
+		Mô hình: 
+			Phân công nhiệm vụ (Công ty)
+			Linh hoạt
+			
+
+	CASE STUDY CỦA UNIX: ỨNG DỤNG CÁC MÔ HÌNH ĐIỀU KHIỂN TRUY CẬP 
+		
+
+
+
+
+
+
+	
+
+	
+
+	
+
+	

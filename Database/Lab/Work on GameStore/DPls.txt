@@ -1,0 +1,74 @@
+1.Thể loại game được ưa thích nhất (phụ thuộc vào việc chứa nhiều bản game được tải nhất)
+-- C1
+WITH table_temp as (
+    SELECT genre_id, genre_name, count(user_id) as downloaded
+    FROM (genres left join belongs_to using (genre_id)) join purchase using (game_id)
+    GROUP BY genre_id, genre_name
+)
+SELECT genre_id, genre_name  FROM table_temp WHERE downloaded >= ALL (SELECT downloaded FROM table_temp);
+-- C2
+SELECT g.genre_id, g.genre_name
+FROM genres g
+JOIN belongs_to b ON g.genre_id = b.genre_id
+JOIN purchase p ON b.game_id = p.game_id
+GROUP BY g.genre_id, g.genre_name
+HAVING COUNT(p.user_id) = (
+    SELECT MAX(downloaded)
+    FROM (
+        SELECT COUNT(p2.user_id) as downloaded
+        FROM genres g2
+        JOIN belongs_to b2 ON g2.genre_id = b2.genre_id
+        JOIN purchase p2 ON b2.game_id = p2.game_id
+        GROUP BY g2.genre_id, g2.genre_name
+    ) t
+);
+
+2.Nhà phát triển có lượt mua cao nhất vào năm 2020  
+-- C1
+with table_temp1 as (
+    select developer_id, count(user_id) as number_downloaded
+     from (select game_id, user_id from purchase where time between '2020-01-01' and '2020-12-01' ) as temp1
+          join
+          (select game_id, developer_id from games ) as temp2
+     using (game_id)
+     group by developer_id
+)
+select * from table_temp1 where number_downloaded >= all (select number_downloaded from table_temp1);
+-- C2
+WITH purchase_counts AS (
+    SELECT g.developer_id, COUNT(p.user_id) as purchase_count
+    FROM purchase p
+    JOIN games g ON p.game_id = g.game_id
+    WHERE p.time BETWEEN '2020-01-01' AND '2020-12-01'
+    GROUP BY g.developer_id
+),
+max_purchase AS (
+    SELECT MAX(purchase_count) as max_purchase_count
+    FROM purchase_counts
+)
+SELECT pc.developer_id, pc.purchase_count
+FROM purchase_counts pc
+JOIN max_purchase mp ON pc.purchase_count = mp.max_purchase_count;
+
+3.Thể loại Game Nintendo phát triển nhiều nhất
+-- C1
+WITH table1 as(
+SELECT genre_id, genre_name, count(game_id) AS number_of_games
+FROM ((SELECT * FROM game_dev WHERE name = 'Nintendo' ) AS temp
+       JOIN games USING (developer_id)
+       JOIN belongs_to USING (game_id)
+       JOIN genres USING (genre_id)) as table1
+GROUP BY genre_id, genre_name)
+SELECT genre_id, genre_name, number_of_games
+FROM table1
+WHERE number_of_games >= ALL  (SELECT number_of_games FROM table1);
+--C2
+SELECT genres.genre_id, genres.genre_name, COUNT(games.game_id) AS number_of_games
+FROM game_dev
+JOIN games ON game_dev.developer_id = games.developer_id
+JOIN belongs_to ON games.game_id = belongs_to.game_id
+JOIN genres ON belongs_to.genre_id = genres.genre_id
+WHERE game_dev.name = 'Nintendo'
+GROUP BY genres.genre_id, genres.genre_name
+ORDER BY number_of_games DESC
+LIMIT 1;

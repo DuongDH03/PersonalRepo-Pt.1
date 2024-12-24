@@ -1,0 +1,50 @@
+Bài 1 (2 điểm): 
+a) Em hãy nêu các điểm khác biệt giữa lớp trừu tượng và lớp trong Java? 
+b) Trong một buổi thảo luận, bạn An cho rằng “nếu ta khai báo thuộc tính của một lớp là đối tượng của 
+lớp trừu tượng thì thuộc tính đó sẽ không thể nào được gán giá trị và luôn luôn bằng null do không khởi 
+tạo được thể hiện của lớp trừu tượng”. Theo em quan điểm đó đúng hay sai và tại sao?
+
+Bài 2 (2 điểm):
+a) Hãy trình bày vắn tắt về trình tự khởi dựng giữa các lớp có mối quan hệ kế thừa?
+b) Nếu lớp cha CHỈ có phương thức khởi dựng mặc định thì lớp con không cần dùng từ khóa super trong 
+phương thức khởi dựng của nó. Nhưng tại sao nếu lớp cha CHỈ có một phương thức khởi dựng có tham số 
+(và không có phương thức khởi dựng mặc định) thì trong phương thức khởi dựng của lớp con, ta vẫn phải 
+dùng từ khóa super?
+
+Bài 3 (6 điểm):
+Một game online có chia quân bộ thành hai loại: quân có đạn (Powder – xạ thủ) và quân không có đạn. 
+Cả hai đều có chung một số thông số như damage (sức công phá), blood (máu), armor (giáp) là số nguyên. 
+Quân (có đạn) sẽ có thêm thông tin về munition (số lượng đạn) mà tất nhiên vắng mặt ở quân không có đạn.
+
+Quân không có đạn được chia làm: Hop (Lính cầm thương), Sword (Kiếm thủ) và Spear (Ném lao). Khi mỗi 
+trận đánh bắt đầu, tất cả quân sẽ được sắp xếp theo đội hình như sau:
+
+Mỗi Line (hàng) sẽ có các thông số về capacity (tổng số lính tối đa trong khu vực); slot (số lượng các 
+slot trong hàng). Ta có 3 loại hàng khác nhau: Front (tiên phong), LongRange (Bắn xa) và Flank (cánh). 
+Hàng Flank có thông tin isLeft (kiểu boolean) để biết cánh này có ở bên trái hay không?. Mỗi lớp trong 
+số ba lớp trên đều có thuộc tính là mảng hai chiều mang tên all có kiểu dữ liệu tùy thuộc vào loại quân 
+có thể chứa trong các slot.
+
+Tất cả các quân không có đạn đều đứng được ở hàng Front nhưng chỉ có quân Sword và Spear đứng được ở hai 
+hàng Flank. Quân Powder chỉ đứng được ở hàng LongRange.
+
+Một Formation (đội hình) như vậy chứa hai Flank, một Front và một LongRange.
+a) Vẽ biểu đồ lớp mô tả hệ thống kể trên. Chú ý rằng không cần thiết phải khai báo lớp đại diện cho Game. 
+Chỉ khai báo các lớp cần thiết nhất.
+
+b) Khai báo các thuộc tính của lớp Flank và cài đặt phương thức khởi dựng có tham số tên isLeft kiểu 
+boolean ở lớp Flank sao cho trong phương thức đó khởi tạo và/hoặc gán các giá trị phù hợp cho các thuộc 
+tính của nó. Chú ý rằng kích thước các chiều của mảng all phải phù hợp số lượng slot và số lượng tối đa 
+các quân có thể chứa trong tất cả các slot. Slot ngoài cùng bên trái được đại diện bởi cột đầu tiên của 
+mảng all. (Giả định rằng mảng X[3][5] sẽ đại diện cho ma trận X có 3 hàng và 5 cột). Giả sử rằng tất cả 
+các lớp khác đã được cài đặt.
+
+c) Lớp Flank có phương thức arrange nhận đầu vào là một mảng một chiều group mà chứa các đối tượng của lớp 
+Sword và Spear. Chú ý rằng không có ràng buộc nào yêu cầu phần tử ở chỉ số j của mảng group phải là đối 
+tượng của Sword hay Spear. Phương thức này sẽ sắp xếp các phần tử của group vào các ô trống (từ trái sang 
+phải). Nhớ rằng Sword có ưu tiên cao hơn trong việc sắp xếp và không ô slot nào chứa cả hai loại quân. 
+Chẳng hạn với group có 32 đối tượng Sword và 12 đối tượng của Spear và khi đó chưa có quân nào trong hàng 
+Flank thì slot bên trái chứa 20 Sword, slot giữa chứa 12 Sword và slot bên phải chứa 12 Spear. 
+Giả định rằng: (i) không phần tử nào của group là null và (ii) khi gọi phương thức arrange, có thể các 
+slot đã chứa quân bên trong. Để đơn giản, SV không cần quan tâm đến việc lưu trữ các quân bị thừa ra (khi 
+các slot không thể chứa hết). Hãy cài đặt phương thức này.

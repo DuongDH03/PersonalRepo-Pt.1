@@ -1,0 +1,332 @@
+\c edudb_v2
+--1
+ select * from "subject" where "credit">5;
+
+--2 
+select student_id, first_name, last_name
+from clazz, student 
+where student.clazz_id = clazz.clazz_id
+	and clazz.name = 'CNTT2.01-K62';
+
+--3
+select student_id, first_name, last_name, name
+from clazz JOIN student ON ( student.clazz_id = clazz.clazz_id)
+where clazz.name LIKE '%CNTT%';
+
+--1' In ra danh sách lớp và tên lớp trưởng (nếu có)
+select clazz.clazz_id, name, first_name || ' '||  last_name as fullname
+from student right JOIN clazz 
+ON (clazz.monitor_id = student.student_id);
+
+--4
+SELECT s.*
+FROM student s, subject, enrollment e
+WHERE s.student_id = e.student_id AND subject.subject_id = e.subject_id AND subject.name = 'C╞í sß╗ƒ dß╗» liß╗çu'
+INTERSECT
+SELECT s.*
+FROM student s, subject, enrollment e
+WHERE s.student_id = e.student_id AND subject.subject_id = e.subject_id AND subject.name = 'Thß╗ï gi├íc m├íy t├¡nh'; 
+
+--C2
+SELECT s.* 
+FROM student s join enrollment e using (student_id) 
+		join subject ON (subject.subject_id = e.subject_id) 
+WHERE (subject.name = 'C╞í sß╗ƒ dß╗» liß╗çu' OR subject.name = 'Thß╗ï gi├íc m├íy t├¡nh'); 
+
+--C3
+SELECT s.*
+FROM student s, subject, enrollment e
+WHERE s.student_id = e.student_id AND subject.subject_id = e.subject_id AND subject.name = 'C╞í sß╗ƒ dß╗» liß╗çu'
+	and s.student_id NOT IN (
+		SELECT s.student_id
+		FROM student s, subject, enrollment e
+		WHERE s.student_id = e.student_id AND subject.subject_id = 					e.subject_id 	AND subject.name = 'Thß╗ï gi├íc m├íy t├¡nh'); 
+	
+--5
+SELECT s.*
+FROM student s, subject, enrollment e
+WHERE s.student_id = e.student_id AND subject.subject_id = e.subject_id AND subject.name = 'Cơ sở dữ liệu'
+UNION
+SELECT s.*
+FROM student s, subject, enrollment e
+WHERE s.student_id = e.student_id AND subject.subject_id = e.subject_id AND subject.name = 'Thị giác máy tính';
+
+--6
+--C1
+select subject.name, subject.subject_id
+from subject
+EXCEPT
+select subject.name, subject.subject_id
+from 
+	enrollment JOIN subject on enrollment.subject_id = subject.subject_id;
+--C2
+select sub.name, sub.subject_id 
+from subject sub LEFT JOIN enrollment e using (subject_id)
+where
+	sub.name = NULL;
+
+--C3
+select * from subject
+where subject_id NOT IN 
+		(select subject_id from enrollment);
+
+--7
+select name, credit
+from enrollment join student on student.student_id = enrollment.student_id join subject on enrollment.subject_id = subject.subject_id
+where student.first_name = 'Ngọc An' and student.last_name = 'Bùi';
+
+--8
+--C1
+select a.first_name || ' ' || a.last_name as fullname, a.midterm_score, a.final_score, a.midterm_score*(100 - s.percentage_final_exam)/100 + a.final_score*s.percentage_final_exam /100 as subject_score
+from (student st join enrollment e on e.student_id = st.student_id) as a, subject s
+where
+        s.name = 'Cơ sở dữ liệu' and a.semester = '20171';
+
+--C2
+select st.student_id, st.first_name || ' ' || st.last_name as fullname, e.midterm_score, e.final_score, e.midterm_score*(100 - s.percentage_final_exam)/100 + e.final_score*s.percentage_final_exam /100 as subject_score
+from student st, enrollment e, subject s
+where
+        s.name = 'C╞í sß╗ƒ dß╗» liß╗çu' and e.semester = '20171' and e.student_id = st.student_id;
+
+--C3
+select s.student_id, enrollment.midterm_score, enrollment.final_score, subject.percentage_final_exam
+from student s join enrollment using (student_id)
+	join subject using (subject_id)
+where subject.name = 'C╞í sß╗ƒ dß╗» liß╗çu' and enrollment.semester = '20172';
+
+--9
+select st.student_id, st.first_name || ' ' || st.last_name as fullname
+from student st, enrollment e, subject s
+where 
+	e.semester = '20171' and 
+	(e.midterm_score < 3 or (e.midterm_score*(100 - s.percentage_final_exam)/100 + e.final_score*s.percentage_final_exam /100) < 4) 
+	and e.subject_id = 'IT1110' and s.subject_id = e.subject_id and st.student_id = e.student_id;
+
+--10
+select 
+	n.first_name || ' ' || n.last_name as full_name, n.name, 
+	m.first_name || ' ' || m.last_name as monitor
+from 
+	(student st join clazz c on st.clazz_id = c.clazz_id) as n, 
+	(student join clazz on student.student_id = clazz.monitor_id) as m
+where n.monitor_id = m.student_id;
+
+--11
+select 
+s.first_name || ' ' || s.last_name as full_name, age(s.dob) as age
+from student s
+where 
+	date_part('year',age(s.dob)) > 25;	
+
+
+--12 
+select s.student_id, s.first_name || ' ' || s.last_name as fullname, s.dob
+from student s
+where 
+	s.dob between '1988-01-01' and '1988-10-31';
+
+-- FUNCTION
+CREATE OR REPLACE FUNCTION totalRecords ()
+RETURNS integer AS $total$
+declare
+	total integer;
+BEGIN
+   SELECT count(*) into total FROM SUBJECT;
+   RETURN total;
+END;
+$total$ LANGUAGE plpgsql;
+
+--Week 8 
+--11. 
+select * from student where EXTRACT (YEAR from AGE(now(), dob)) >= 25;
+
+--12. 
+select * from student where  EXTRACT (YEAR from student.dob) = 1999 ;
+
+--13.
+select clazz.name, count(student_id) from clazz join student using (clazz_id) group by clazz.name;
+
+--14. 
+select s.subject_id, max(e.midterm_score), avg(e.midterm_score), min(e.midterm_score) 
+    from subject s join enrollment e using (subject_id)
+    where s.name = ' Mß║íng m├íy t├¡nh' and e.semester = '20172'
+    group by s.subject_id;
+
+--15. 
+select lecturer.lecturer_id, count(teaching.subject_id) 
+    from lecturer join teaching on (lecturer.lecturer_id =teaching.lecturer_id)
+    group by lecturer.lecturer_id;
+
+--16.
+ select subject.subject_id, name
+    from subject join teaching on (subject.subject_id = teaching.subject_id)
+    group by subject.subject_id, name
+    having count (teaching.lecturer_id) >= 2;
+
+--17. 
+select subject.subject_id, name
+    from subject left join teaching on (subject.subject_id = teaching.subject_id)
+    group by subject.subject_id, name
+    having count (teaching.lecturer_id) < 2;
+
+
+--18. 
+select student.student_id, enrollment.final_score
+    from student join enrollment on (student.student_id = enrollment.student_id)
+    where final_score
+           = ( select max(final_score)  
+                from enrollment
+                 where semester = '20172' and subject_id = 'IT3080'
+                   group by subject_id
+               ) 
+               and enrollment.semester = '20172' 
+               and enrollment.subject_id = 'IT3080';
+
+
+    select student.student_id, enrollment.final_score
+    from student join enrollment on (student.student_id = enrollment.student_id)
+    where final_score
+           = ( select max(final_score)  
+                from enrollment
+                   group by subject_id, semester
+                   having semester = '20172' and subject_id = 'IT3080'
+               );
+
+--18
+--max mid term: Not optimal
+SELECT student.first_name, student.last_name
+FROM student
+JOIN enrollment ON student.student_id = enrollment.student_id
+WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+AND enrollment.midterm_score = (
+    SELECT MAX(midterm_score)
+    FROM enrollment
+    WHERE subject_id = 'IT3080' AND semester = '20172'
+);
+
+--mid term: Optimal
+WITH tmp AS (
+	SELECT * FROM enrollment 
+     	WHERE subject_id = 'IT3080' AND semester = '20172'
+)
+SELECT *
+FROM tmp
+WHERE midterm_score = (
+	SELECT max(midterm_score) from tmp
+);
+
+-- Subject Score
+SELECT student.first_name, student.last_name
+FROM student
+JOIN enrollment ON student.student_id = enrollment.student_id
+JOIN subject ON enrollment.subject_id = subject.subject_id
+WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+AND (enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100) = (
+    SELECT MAX(enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100)
+    FROM enrollment
+    JOIN subject ON enrollment.subject_id = subject.subject_id
+    WHERE enrollment.subject_id = 'IT3080' AND enrollment.semester = '20172'
+);
+
+--C2
+WITH tmp AS (
+	SELECT student_id,(enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100 ) as subject_score 
+	FROM enrollment join subject using (subject_id) 
+     	WHERE subject_id = 'IT3080' AND semester = '20172'
+)
+SELECT student.student_id, student.first_name, student.last_name, subject_score
+FROM tmp join student USING (student_id)
+WHERE (subject_score) = (
+	SELECT max(subject_score) 
+	FROM tmp
+);
+	
+	
+--C3: NOT USING MAX
+
+WITH tmp AS (
+	SELECT student_id,(enrollment.midterm_score * (1 - subject.percentage_final_exam/100) + enrollment.final_score * subject.percentage_final_exam/100 ) as subject_score 
+	FROM enrollment join subject using (subject_id) 
+     	WHERE subject_id = 'IT3080' AND semester = '20172'
+)
+SELECT student.student_id, student.first_name, student.last_name, subject_score
+FROM tmp join student USING (student_id)
+WHERE (subject_score) >= ALL(
+	SELECT subject_score
+	FROM tmp
+);
+
+-- in WHERE, we can write a sub query for remind the data return;
+-- use USING instead of ON if we JOIN table having same column name;
+
+
+-- select max(enrollment.midterm_score * (1-subject.percentage_final_exam/100.0)  
+--enrollment.final_score*(subject.percentage_final_exam)/100.0)  as max_point
+-- from enrollment join subject using (subject_id)
+-- group by enrollment.subject_id, enrollment.semester
+-- having enrollment.semester = '20172' and enrollment.subject_id = 'IT3080'
+
+
+
+--18+.
+
+select s.student_id, (e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0) as point 
+from student s join enrollment e using (student_id) join subject sj using (subject_id)
+where e.semester = '20172' and  e.subject_id = 'IT3080'
+      and e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0
+           = (select max(e.midterm_score * (1 - sj.percentage_final_exam/100.0) + e.final_score*(sj.percentage_final_exam)/100.0)
+               from enrollment e join subject sj using (subject_id)
+                group by e.semester, e.subject_id
+                  having e.semester = '20172' and e.subject_id = 'IT3080');
+
+-- 19: Đưa ra danh sách lớp có số sinh viên đông nhất
+SELECT COUNT(*), clazz_id
+FROM student 
+GROUP BY clazz_id
+HAVING COUNT(student.student_id) = (
+    SELECT MAX(student_count)
+    FROM (
+        SELECT COUNT(student.student_id) AS student_count
+        FROM clazz
+        JOIN student ON clazz.clazz_id = student.clazz_id
+        GROUP BY clazz.clazz_id
+    ) AS subquery
+);
+
+--C2: SHORT
+SELECT clazz_id, count(*)
+FROM student 
+GROUP BY clazz_id
+HAVING COUNT(student_id) >= ALL(
+	SELECT COUNT(*)
+	FROM student 
+	GROUP BY clazz_id);
+
+--C3: CLEAN
+WITH tmp AS (
+	SELECT clazz_id, COUNT(*) AS ss
+	FROM student
+	GROUP BY clazz_id)
+SELECT clazz_id
+FROM tmp
+WHERE ss = (
+	SELECT max(ss) 
+	FROM tmp);
+
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
